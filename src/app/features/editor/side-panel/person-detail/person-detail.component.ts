@@ -35,8 +35,17 @@ export class PersonDetailComponent {
   }
 
   onDeleteConfirm(): void {
+    const persons = this.personsStore.persons();
+    const idx = persons.findIndex((p) => p.id === this.person().id);
+
+    if (persons.length === 1) {
+      this.sidePanelService.close();
+    } else {
+      const next = persons[idx > 0 ? idx - 1 : 1];
+      this.sidePanelService.open({ type: 'person-detail', personId: next.id });
+    }
+
     this.personsStore.delete(this.person().id);
-    this.sidePanelService.close();
     this.confirmDelete.set(false);
   }
 }

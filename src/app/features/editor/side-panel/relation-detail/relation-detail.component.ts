@@ -41,8 +41,17 @@ export class RelationDetailComponent {
   }
 
   onDeleteConfirm(): void {
+    const relations = this.relationsStore.relations();
+    const idx = relations.findIndex((r) => r.id === this.relation().id);
+
+    if (relations.length === 1) {
+      this.sidePanelService.close();
+    } else {
+      const next = relations[idx > 0 ? idx - 1 : 1];
+      this.sidePanelService.open({ type: 'relation-detail', relationId: next.id });
+    }
+
     this.relationsStore.delete(this.relation().id);
-    this.sidePanelService.close();
     this.confirmDelete.set(false);
   }
 
