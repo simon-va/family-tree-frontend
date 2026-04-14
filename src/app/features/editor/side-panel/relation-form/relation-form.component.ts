@@ -4,7 +4,7 @@ import { ButtonModule } from 'primeng/button';
 import { Divider } from 'primeng/divider';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
-import { TextareaModule } from 'primeng/textarea';
+import { Textarea } from 'primeng/textarea';
 import { finalize } from 'rxjs';
 import { AccordionComponent } from '../../../../shared/accordion/accordion.component';
 import { FuzzyDatePickerComponent } from '../../../../shared/persons/fuzzy-date-picker/fuzzy-date-picker.component';
@@ -37,7 +37,7 @@ const TYPE_LABELS: Record<RelationType, string> = {
 @Component({
   selector: 'app-relation-form',
   standalone: true,
-  imports: [FormsModule, ButtonModule, InputTextModule, SelectModule, TextareaModule, FuzzyDatePickerComponent, Divider, AccordionComponent],
+  imports: [FormsModule, ButtonModule, InputTextModule, SelectModule, Textarea, FuzzyDatePickerComponent, Divider, AccordionComponent],
   templateUrl: './relation-form.component.html',
   styleUrl: './relation-form.component.scss',
 })
