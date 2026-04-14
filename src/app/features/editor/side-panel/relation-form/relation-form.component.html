@@ -1,0 +1,102 @@
+<div class="relation-form">
+  <div class="relation-form__field">
+    <label for="personA">Person A <span class="required">*</span></label>
+    <p-select
+      id="personA"
+      [options]="personAOptions()"
+      [ngModel]="personAId()"
+      (ngModelChange)="onPersonAChange($event)"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Person auswählen"
+      [filter]="true"
+      filterBy="label"
+      [disabled]="saving()"
+    />
+  </div>
+
+  <div class="relation-form__field">
+    <label for="type">Typ <span class="required">*</span></label>
+    <p-select
+      id="type"
+      [options]="typeOptions"
+      [ngModel]="type()"
+      (ngModelChange)="type.set($event)"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Beziehungstyp auswählen"
+      [disabled]="saving()"
+    />
+  </div>
+
+  <div class="relation-form__field">
+    <label for="personB">Person B <span class="required">*</span></label>
+    <p-select
+      id="personB"
+      [options]="personBOptions()"
+      [ngModel]="personBId()"
+      (ngModelChange)="onPersonBChange($event)"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Person auswählen"
+      [filter]="true"
+      filterBy="label"
+      [disabled]="saving()"
+    />
+  </div>
+
+  @if (previewText() && !isDuplicate()) {
+    <div class="relation-form__preview">
+      {{ previewText() }}
+    </div>
+  }
+
+  @if (isDuplicate()) {
+    <div class="relation-form__error">
+      Diese Beziehung existiert bereits.
+    </div>
+  }
+
+  <app-accordion label="Zeitraum & Endgrund">
+    <div class="relation-form__field">
+      <label>Von</label>
+      <app-fuzzy-date-picker [(value)]="startDate" [disabled]="saving()" />
+    </div>
+
+    <div class="relation-form__field">
+      <label>Bis</label>
+      <app-fuzzy-date-picker [(value)]="endDate" [disabled]="saving()" />
+    </div>
+
+    <div class="relation-form__field">
+      <label for="endReason">Endgrund</label>
+      <input
+        id="endReason"
+        pInputText
+        [ngModel]="endReason()"
+        (ngModelChange)="endReason.set($event)"
+        [disabled]="saving()"
+      />
+    </div>
+  </app-accordion>
+
+  <div class="relation-form__field">
+    <label for="notes">Notizen</label>
+    <textarea
+      id="notes"
+      pTextarea
+      rows="4"
+      [ngModel]="notes()"
+      (ngModelChange)="notes.set($event)"
+      [disabled]="saving()"
+    ></textarea>
+  </div>
+</div>
+
+<div class="relation-form__actions">
+  <p-divider />
+  <div class="relation-form__actions-buttons">
+    <p-button [label]="relationId() ? 'Speichern' : 'Erstellen'" [disabled]="!isValid || saving()" [loading]="saving()" (click)="onSubmit()" />
+    <p-button label="Abbrechen" severity="secondary" [outlined]="true" [disabled]="saving()" (click)="onCancel()" />
+  </div>
+</div>

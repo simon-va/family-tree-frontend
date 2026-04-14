@@ -1,0 +1,24 @@
+.welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 1rem;
+}
+
+.welcome__input {
+  width: 280px;
+}
+
+.key-link {
+  font-size: 0.875rem;
+  color: var(--p-text-muted-color);
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: -0.25rem;
+
+  &:hover {
+    color: var(--p-text-color);
+  }
+}

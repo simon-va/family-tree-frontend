@@ -1,0 +1,26 @@
+<div class="welcome">
+  <h1>Stammbaum</h1>
+
+  @if (storedUser(); as user) {
+    <p>Willkommen zurück {{ user.userName }}</p>
+    <p-button label="Zum Editor" (onClick)="goToEditor()" />
+  } @else {
+    <input
+      pInputText
+      class="welcome__input"
+      [placeholder]="mode() === 'name' ? 'Name eingeben' : 'Schlüssel eingeben'"
+      [(ngModel)]="inputValue"
+      (keyup.enter)="goToEditor()"
+    />
+
+    @if (mode() === 'name') {
+      <a class="key-link" (click)="switchToKeyMode()">Schlüssel eingeben</a>
+    }
+
+    <p-button
+      label="Zum Editor"
+      [disabled]="!inputValue().trim()"
+      (onClick)="goToEditor()"
+    />
+  }
+</div>

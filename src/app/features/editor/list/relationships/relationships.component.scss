@@ -1,0 +1,6 @@
+:host ::ng-deep {
+  tr.row-selected td {
+    background-color: var(--p-primary-50);
+    font-weight: 600;
+  }
+}

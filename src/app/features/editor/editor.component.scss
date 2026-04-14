@@ -1,0 +1,30 @@
+.editor-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.editor-menubar__start {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.editor-menubar__logo {
+  font-size: 1.125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.editor-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.editor-content {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+}

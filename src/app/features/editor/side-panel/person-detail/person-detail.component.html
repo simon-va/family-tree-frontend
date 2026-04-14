@@ -1,0 +1,60 @@
+<div class="side-panel__content">
+  <div class="side-panel__scrollable">
+    <h2 class="side-panel__name">
+      {{ person().title ? person().title + ' ' : '' }}{{ person().firstName }}{{ person().middleNames ? ' ' + person().middleNames : '' }} {{ person().lastName }}
+    </h2>
+
+    @if (person().birthName) {
+      <p class="side-panel__birth-name">geb. {{ person().birthName }}</p>
+    }
+
+    <dl class="side-panel__details">
+      <dt>Geschlecht</dt>
+      <dd>{{ person().gender | gender }}</dd>
+
+      <dt>Geburtsdatum</dt>
+      <dd>{{ person().birthDate | fuzzyDate }}</dd>
+
+      <dt>Geburtsort</dt>
+      <dd>{{ person().birthPlace ?? '—' }}</dd>
+
+      <dt>Sterbedatum</dt>
+      <dd>{{ person().deathDate | fuzzyDate }}</dd>
+
+      <dt>Sterbeort</dt>
+      <dd>{{ person().deathPlace ?? '—' }}</dd>
+
+      <dt>Begräbnisort</dt>
+      <dd>{{ person().burialPlace ?? '—' }}</dd>
+
+      <dt>Religion</dt>
+      <dd>{{ person().religion ?? '—' }}</dd>
+    </dl>
+
+    @if (person().notes) {
+      <div class="side-panel__notes">
+        <p class="side-panel__notes-label">Notizen</p>
+        <p>{{ person().notes }}</p>
+      </div>
+    }
+  </div>
+
+  <div class="last-action">
+    <p-divider />
+
+    @if (confirmDelete()) {
+      <div class="confirm-delete">
+        <p>Soll <strong>{{ person().firstName }} {{ person().lastName }}</strong> wirklich gelöscht werden? Alle zugehörigen Beziehungen werden ebenfalls gelöscht.</p>
+        <div class="confirm-actions">
+          <p-button label="Ja, löschen" severity="danger" (click)="onDeleteConfirm()" />
+          <p-button label="Abbrechen" severity="secondary" [outlined]="true" (click)="onDeleteCancel()" />
+        </div>
+      </div>
+    } @else {
+      <div class="detail-actions">
+        <p-button label="Bearbeiten" (click)="onEdit()" />
+        <p-button label="Löschen" [outlined]="true" severity="danger" (click)="onDeleteRequest()" />
+      </div>
+    }
+  </div>
+</div>

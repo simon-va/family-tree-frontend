@@ -1,0 +1,32 @@
+<p-menubar [model]="[]">
+  <ng-template #start>
+    <div class="header__start">
+      <span class="header__logo">Stammbaum</span>
+      <p-selectButton
+        [options]="viewOptions"
+        [ngModel]="activeView()"
+        optionLabel="label"
+        optionValue="value"
+        optionDisabled="disabled"
+        [allowEmpty]="false"
+        (onChange)="onViewChange($event)"
+      />
+    </div>
+  </ng-template>
+  <ng-template #end>
+    <div class="header__end">
+      <p-button
+        label="Person"
+        icon="pi pi-plus"
+        [outlined]="true"
+        (onClick)="openPersonForm()"
+      />
+      <p-button
+        label="Beziehung"
+        icon="pi pi-plus"
+        [outlined]="true"
+        (onClick)="openRelationForm()"
+      />
+    </div>
+  </ng-template>
+</p-menubar>

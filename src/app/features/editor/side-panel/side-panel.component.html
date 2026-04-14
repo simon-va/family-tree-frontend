@@ -1,0 +1,58 @@
+<div class="side-panel" [class.is-resizing]="isResizing()" [style.width.px]="panelWidth()">
+  <div class="drag-handle" (mousedown)="onDragHandleMouseDown($event)" (dblclick)="onDragHandleDblClick()"></div>
+  <div class="side-panel__header">
+    <span class="side-panel__title">
+      @let action = service.action();
+
+      @switch (action.type) {
+        @case ('person-detail') {
+          Informationen zu Person
+        }
+        @case ('person-form') {
+          Neue Person erstellen
+        }
+        @case ('person-edit') {
+          Person bearbeiten
+        }
+        @case ('relation-form') {
+          Neue Beziehung erstellen
+        }
+        @case ('relation-detail') {
+          Informationen zu Beziehung
+        }
+        @case ('relation-edit') {
+          Beziehung bearbeiten
+        }
+        @default {
+          Unbekannt
+        }
+      }
+    </span>
+    <p-button
+      icon="pi pi-times"
+      severity="secondary"
+      [rounded]="true"
+      [text]="true"
+      (onClick)="service.close()"
+    />
+  </div>
+
+  @if (person(); as p) {
+    <app-person-detail [person]="p" />
+  }
+  @if (service.action().type === 'person-form') {
+    <app-person-form />
+  }
+  @if (editPersonId(); as id) {
+    <app-person-form [personId]="id" />
+  }
+  @if (service.action().type === 'relation-form') {
+    <app-relation-form />
+  }
+  @if (relation(); as r) {
+    <app-relation-detail [relation]="r" />
+  }
+  @if (editRelationId(); as id) {
+    <app-relation-form [relationId]="id" />
+  }
+</div>

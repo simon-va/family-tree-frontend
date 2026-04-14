@@ -1,0 +1,42 @@
+import { Component, inject, input, signal } from '@angular/core';
+import { ButtonModule } from 'primeng/button';
+import { Divider } from 'primeng/divider';
+import { FuzzyDatePipe } from '../../../../shared/persons/fuzzy-date.pipe';
+import { GenderPipe } from '../../../../shared/persons/gender.pipe';
+import { Person } from '../../../../shared/persons/person.model';
+import { PersonsStore } from '../../../../shared/persons/persons.store';
+import { SidePanelService } from '../side-panel.service';
+
+@Component({
+  selector: 'app-person-detail',
+  standalone: true,
+  imports: [GenderPipe, FuzzyDatePipe, ButtonModule, Divider],
+  templateUrl: './person-detail.component.html',
+  styleUrl: './person-detail.component.scss',
+})
+export class PersonDetailComponent {
+  readonly person = input.required<Person>();
+
+  private readonly personsStore = inject(PersonsStore);
+  private readonly sidePanelService= inject(SidePanelService)
+
+  readonly confirmDelete = signal(false);
+
+  onEdit(): void {
+    this.sidePanelService.open({ type: 'person-edit', personId: this.person().id });
+  }
+
+  onDeleteRequest(): void {
+    this.confirmDelete.set(true);
+  }
+
+  onDeleteCancel(): void {
+    this.confirmDelete.set(false);
+  }
+
+  onDeleteConfirm(): void {
+    this.personsStore.delete(this.person().id);
+    this.sidePanelService.close();
+    this.confirmDelete.set(false);
+  }
+}

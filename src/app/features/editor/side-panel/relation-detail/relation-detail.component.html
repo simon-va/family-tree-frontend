@@ -1,0 +1,57 @@
+<div class="side-panel__content">
+  <div class="side-panel__scrollable">
+    <h2 class="side-panel__name">
+      {{ personA()?.firstName }} {{ personA()?.lastName }}
+      &amp;
+      {{ personB()?.firstName }} {{ personB()?.lastName }}
+    </h2>
+
+    <dl class="side-panel__details">
+      <dt>Typ</dt>
+      <dd>{{ relation().type | relationType }}</dd>
+
+      <dt>Person A</dt>
+      <dd>{{ personA()?.firstName }} {{ personA()?.lastName }}</dd>
+
+      <dt>Person B</dt>
+      <dd>{{ personB()?.firstName }} {{ personB()?.lastName }}</dd>
+
+      <dt>Von</dt>
+      <dd>{{ relation().startDate | fuzzyDate }}</dd>
+
+      <dt>Bis</dt>
+      <dd>{{ relation().endDate | fuzzyDate }}</dd>
+
+      @if (relation().endReason) {
+        <dt>Grund</dt>
+        <dd>{{ relation().endReason }}</dd>
+      }
+    </dl>
+
+    @if (relation().notes) {
+      <div class="side-panel__notes">
+        <p class="side-panel__notes-label">Notizen</p>
+        <p>{{ relation().notes }}</p>
+      </div>
+    }
+  </div>
+
+  <div class="last-action">
+    <p-divider />
+
+    @if (confirmDelete()) {
+      <div class="confirm-delete">
+        <p>Soll diese Beziehung wirklich gelöscht werden?</p>
+        <div class="confirm-actions">
+          <p-button label="Ja, löschen" severity="danger" (click)="onDeleteConfirm()" />
+          <p-button label="Abbrechen" severity="secondary" [outlined]="true" (click)="onDeleteCancel()" />
+        </div>
+      </div>
+    } @else {
+      <div class="detail-actions">
+        <p-button label="Bearbeiten" (click)="onEdit()" />
+        <p-button label="Löschen" [outlined]="true" severity="danger" (click)="onDeleteRequest()" />
+      </div>
+    }
+  </div>
+</div>

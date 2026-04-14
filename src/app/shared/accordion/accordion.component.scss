@@ -1,0 +1,38 @@
+.accordion {
+  display: flex;
+  flex-direction: column;
+
+  &__toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--p-surface-200);
+    cursor: pointer;
+    user-select: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+
+    i {
+      color: var(--p-select-dropdown-color);
+    }
+  }
+
+  &__content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 300ms ease-in-out;
+
+    &.is-open {
+      max-height: 1200px;
+    }
+  }
+
+  &__fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-top: 1rem;
+    padding-left: 1rem;
+  }
+}

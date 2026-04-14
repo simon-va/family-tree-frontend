@@ -1,0 +1,36 @@
+@if (relationsStore.error()) {
+  <p>{{ relationsStore.error() }}</p>
+} @else {
+  <p-table [value]="relationsStore.relations()" [tableStyle]="{ 'min-width': '50rem' }" [loading]="relationsStore.loading()">
+    <ng-template #header>
+      <tr>
+        <th>Person A</th>
+        <th>Typ</th>
+        <th>Person B</th>
+        <th>Von</th>
+        <th>Bis</th>
+        <th style="width: 4rem"></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-relation>
+      @let personA = personsMap().get(relation.personAId);
+      @let personB = personsMap().get(relation.personBId);
+      <tr [class.row-selected]="selectedRelationId() === relation.id">
+        <td>{{ personA?.firstName }} {{ personA?.lastName }}</td>
+        <td>{{ relation.type | relationType }}</td>
+        <td>{{ personB?.firstName }} {{ personB?.lastName }}</td>
+        <td>{{ relation.startDate | fuzzyDate }}</td>
+        <td>{{ relation.endDate | fuzzyDate }}</td>
+        <td>
+          <p-button
+            icon="pi pi-info-circle"
+            severity="secondary"
+            [rounded]="true"
+            [text]="true"
+            (onClick)="sidePanelService.open({ type: 'relation-detail', relationId: relation.id })"
+          />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+}

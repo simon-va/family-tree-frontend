@@ -1,0 +1,93 @@
+<div class="fuzzy-date-field">
+  <span class="fuzzy-date-field__value">{{ (value() ?? undefined) | fuzzyDate }}</span>
+  <p-button
+    icon="pi pi-pencil"
+    [text]="true"
+    size="small"
+    severity="secondary"
+    [disabled]="disabled()"
+    (onClick)="openPopover($event)"
+  />
+</div>
+
+<p-popover #op>
+  <div class="fuzzy-date-popover">
+    <div class="fuzzy-date-popover__field">
+      <label>Präzision</label>
+      <p-select
+        [options]="precisionOptions"
+        [ngModel]="draftPrecision()"
+        (ngModelChange)="setPrecision($event)"
+        optionLabel="label"
+        optionValue="value"
+      />
+    </div>
+
+    <div class="fuzzy-date-popover__field">
+      <label>Datum</label>
+      @if (showPickerPrecision()) {
+        <p-selectbutton
+          [options]="pickerPrecisionOptions"
+          [ngModel]="pickerPrecisionDate()"
+          (ngModelChange)="setPickerPrecisionDate($event)"
+          optionLabel="label"
+          optionValue="value"
+          styleClass="fuzzy-date-popover__picker-toggle"
+        />
+      }
+      <p-datepicker
+        [ngModel]="draftDate()"
+        (ngModelChange)="draftDate.set($event)"
+        [view]="datePickerView()"
+        [dateFormat]="datePickerFormat()"
+        [readonlyInput]="true"
+        [showIcon]="true"
+        iconDisplay="input"
+        [showClear]="true"
+        fluid
+      />
+    </div>
+
+    @if (showDateTo()) {
+      <div class="fuzzy-date-popover__field">
+        <label>Bis-Datum</label>
+        @if (showPickerPrecision()) {
+          <p-selectbutton
+            [options]="pickerPrecisionOptions"
+            [ngModel]="pickerPrecisionDateTo()"
+            (ngModelChange)="setPickerPrecisionDateTo($event)"
+            optionLabel="label"
+            optionValue="value"
+            styleClass="fuzzy-date-popover__picker-toggle"
+          />
+        }
+        <p-datepicker
+          [ngModel]="draftDateTo()"
+          (ngModelChange)="draftDateTo.set($event)"
+          [view]="datePickerViewTo()"
+          [dateFormat]="datePickerFormatTo()"
+          [readonlyInput]="true"
+          [showIcon]="true"
+          iconDisplay="input"
+          [showClear]="true"
+          fluid
+        />
+      </div>
+    }
+
+    <div class="fuzzy-date-popover__field">
+      <label>Notiz</label>
+      <input
+        pInputText
+        [ngModel]="draftNote()"
+        (ngModelChange)="draftNote.set($event)"
+        placeholder="Optionale Notiz"
+      />
+    </div>
+
+    <div class="fuzzy-date-popover__actions">
+      <p-button label="Übernehmen" [disabled]="!canApply()" (onClick)="apply()" />
+      <p-button [label]="value() ? 'Löschen' : 'Abbrechen'" severity="secondary" [outlined]="true" (onClick)="clear()" />
+    </div>
+  </div>
+</p-popover>

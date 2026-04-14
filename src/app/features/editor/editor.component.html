@@ -1,0 +1,11 @@
+<div class="editor-shell">
+  <app-header />
+  <div class="editor-body">
+    <main class="editor-content">
+      <router-outlet />
+    </main>
+    @if (sidePanelService.action().type !== 'none') {
+      <app-side-panel [@slidePanel] />
+    }
+  </div>
+</div>

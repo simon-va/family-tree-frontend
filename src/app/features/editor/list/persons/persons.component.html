@@ -1,0 +1,32 @@
+@if (store.error()) {
+  <p>{{ store.error() }}</p>
+} @else {
+  <p-table [value]="store.persons()" [tableStyle]="{ 'min-width': '50rem' }" [loading]="store.loading()">
+    <ng-template #header>
+      <tr>
+        <th>Name</th>
+        <th>Geschlecht</th>
+        <th>Geburtsdatum</th>
+        <th>Sterbedatum</th>
+        <th style="width: 4rem"></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-person>
+      <tr [class.row-selected]="selectedPersonId() === person.id">
+        <td>{{ person.firstName }} {{ person.lastName }}</td>
+        <td>{{ person.gender | gender }}</td>
+        <td>{{ person.birthDate | fuzzyDate }}</td>
+        <td>{{ person.deathDate | fuzzyDate }}</td>
+        <td>
+          <p-button
+            icon="pi pi-info-circle"
+            severity="secondary"
+            [rounded]="true"
+            [text]="true"
+            (onClick)="sidePanelService.open({ type: 'person-detail', personId: person.id })"
+          />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+}
