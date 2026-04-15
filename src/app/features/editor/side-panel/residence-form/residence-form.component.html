@@ -1,0 +1,72 @@
+<div class="residence-form">
+  <div class="residence-form__field">
+    <label for="street">Straße</label>
+    <input
+      id="street"
+      pInputText
+      [ngModel]="street()"
+      (ngModelChange)="street.set($event)"
+      [disabled]="saving()"
+    />
+  </div>
+
+  <div class="residence-form__field">
+    <label for="city">Stadt</label>
+    <input
+      id="city"
+      pInputText
+      [ngModel]="city()"
+      (ngModelChange)="city.set($event)"
+      [disabled]="saving()"
+    />
+  </div>
+
+  <div class="residence-form__field">
+    <label for="country">Land</label>
+    <input
+      id="country"
+      pInputText
+      [ngModel]="country()"
+      (ngModelChange)="country.set($event)"
+      [disabled]="saving()"
+    />
+  </div>
+
+  <app-accordion label="Weitere Details">
+    <div class="residence-form__field">
+      <label>Startdatum</label>
+      <app-fuzzy-date-picker [(value)]="startDate" [disabled]="saving()" />
+    </div>
+
+    <div class="residence-form__field">
+      <label>Enddatum</label>
+      <app-fuzzy-date-picker [(value)]="endDate" [disabled]="saving()" />
+    </div>
+
+  </app-accordion>
+
+  <div class="residence-form__field">
+    <label for="notes">Notizen</label>
+    <textarea
+      id="notes"
+      pTextarea
+      rows="4"
+      [ngModel]="notes()"
+      (ngModelChange)="notes.set($event)"
+      [disabled]="saving()"
+    ></textarea>
+  </div>
+</div>
+
+<div class="residence-form__actions">
+  <p-divider />
+  <div class="residence-form__actions-buttons">
+    <p-button
+      [label]="residenceId() ? 'Speichern' : 'Erstellen'"
+      [disabled]="!isValid || saving()"
+      [loading]="saving()"
+      (click)="onSubmit()"
+    />
+    <p-button label="Abbrechen" severity="secondary" [outlined]="true" [disabled]="saving()" (click)="onCancel()" />
+  </div>
+</div>

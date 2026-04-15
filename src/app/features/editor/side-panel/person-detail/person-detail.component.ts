@@ -33,6 +33,14 @@ export class PersonDetailComponent {
     return [residence.street, residence.city, residence.country].filter(Boolean).join(', ');
   }
 
+  openResidenceForm(): void {
+    this.sidePanelService.open({ type: 'residence-form', personId: this.person().id });
+  }
+
+  onEditResidence(residenceId: string): void {
+    this.sidePanelService.open({ type: 'residence-edit', residenceId });
+  }
+
   onEdit(): void {
     this.sidePanelService.open({ type: 'person-edit', personId: this.person().id });
   }

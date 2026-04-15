@@ -5,4 +5,6 @@ export type PanelAction =
   | { type: 'person-edit'; personId: string }
   | { type: 'relation-form' }
   | { type: 'relation-detail'; relationId: string }
-  | { type: 'relation-edit'; relationId: string };
+  | { type: 'relation-edit'; relationId: string }
+  | { type: 'residence-form'; personId: string }
+  | { type: 'residence-edit'; residenceId: string };
