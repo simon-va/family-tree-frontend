@@ -1,13 +1,16 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { FuzzyDate } from './person.model';
+import { FuzzyDate, FuzzyDateFieldPrecision } from './person.model';
 
 @Pipe({ name: 'fuzzyDate', standalone: true })
 export class FuzzyDatePipe implements PipeTransform {
   transform(value: Omit<FuzzyDate, 'id'> | undefined | null): string {
     if (!value) return '—';
 
-    const formatted = this.formatDate(value.date, value.precision);
-    const formattedTo = value.dateTo ? this.formatDate(value.dateTo, 'year') : null;
+    const dateFieldPrecision = this.resolveFieldPrecision(value.precision, value.datePrecision);
+    const dateToFieldPrecision = this.resolveFieldPrecision(value.precision, value.dateToPrecision);
+
+    const formatted = this.formatDate(value.date, dateFieldPrecision);
+    const formattedTo = value.dateTo ? this.formatDate(value.dateTo, dateToFieldPrecision) : null;
 
     switch (value.precision) {
       case 'exact':
@@ -16,8 +19,6 @@ export class FuzzyDatePipe implements PipeTransform {
         return formatted;
       case 'year':
         return formatted;
-      case 'about':
-        return `um ${formatted}`;
       case 'estimated':
         return `ca. ${formatted}`;
       case 'before':
@@ -31,7 +32,17 @@ export class FuzzyDatePipe implements PipeTransform {
     }
   }
 
-  private formatDate(dateStr: string, precision: FuzzyDate['precision']): string {
+  private resolveFieldPrecision(
+    precision: FuzzyDate['precision'],
+    fieldPrecision: FuzzyDateFieldPrecision | undefined,
+  ): FuzzyDateFieldPrecision {
+    if (precision === 'exact') return 'exact';
+    if (precision === 'month') return 'month';
+    if (precision === 'year') return 'year';
+    return fieldPrecision ?? 'exact';
+  }
+
+  private formatDate(dateStr: string, precision: FuzzyDateFieldPrecision): string {
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) return dateStr;
 
@@ -40,7 +51,7 @@ export class FuzzyDatePipe implements PipeTransform {
         return date.toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
       case 'month':
         return date.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
-      default:
+      case 'year':
         return String(date.getFullYear());
     }
   }

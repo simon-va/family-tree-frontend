@@ -2,17 +2,20 @@ export type FuzzyDatePrecision =
   | 'exact'
   | 'month'
   | 'year'
-  | 'about'
   | 'estimated'
   | 'before'
   | 'after'
   | 'between';
 
+export type FuzzyDateFieldPrecision = 'exact' | 'month' | 'year';
+
 export interface FuzzyDate {
   id: string;
   precision: FuzzyDatePrecision;
   date: string;
+  datePrecision?: FuzzyDateFieldPrecision;
   dateTo?: string;
+  dateToPrecision?: FuzzyDateFieldPrecision;
   note?: string;
 }
 

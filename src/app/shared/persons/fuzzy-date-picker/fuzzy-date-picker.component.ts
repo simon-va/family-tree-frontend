@@ -105,10 +105,10 @@ export class FuzzyDatePickerComponent {
 
   openPopover(event: MouseEvent): void {
     const current = this.value();
-    this.draftPrecision.set(current?.precision ?? 'exact');
-    const datePickerP = this.inferPickerPrecision(current?.date ?? '');
-    this.pickerPrecisionDate.set(datePickerP);
-    this.pickerPrecisionDateTo.set(this.inferPickerPrecision(current?.dateTo ?? ''));
+    const precision = current?.precision ?? 'exact';
+    this.draftPrecision.set(precision);
+    this.pickerPrecisionDate.set(current?.datePrecision ?? this.precisionToPickerPrecision(precision));
+    this.pickerPrecisionDateTo.set(current?.dateToPrecision ?? 'year');
     this.draftDate.set(this.stringToDate(current?.date ?? ''));
     this.draftDateTo.set(this.stringToDate(current?.dateTo ?? ''));
     this.draftNote.set(current?.note ?? '');
@@ -135,13 +135,19 @@ export class FuzzyDatePickerComponent {
 
   apply(): void {
     const precision = this.draftPrecision();
-    const date = this.dateToString(this.draftDate(), this.pickerPrecisionDate());
+    const date = this.dateToString(this.draftDate());
     if (!date) return;
 
     const result: FuzzyDateInput = { precision, date };
+    if (this.showPickerPrecision()) {
+      result.datePrecision = this.pickerPrecisionDate();
+    }
     if (precision === 'between') {
-      const dateTo = this.dateToString(this.draftDateTo(), this.pickerPrecisionDateTo());
-      if (dateTo) result.dateTo = dateTo;
+      const dateTo = this.dateToString(this.draftDateTo());
+      if (dateTo) {
+        result.dateTo = dateTo;
+        result.dateToPrecision = this.pickerPrecisionDateTo();
+      }
     }
     if (this.draftNote().trim()) {
       result.note = this.draftNote().trim();
@@ -156,11 +162,9 @@ export class FuzzyDatePickerComponent {
     this.popover().hide();
   }
 
-  private inferPickerPrecision(str: string): PickerPrecision {
-    if (!str) return 'year';
-    const parts = str.split('-');
-    if (parts.length >= 3) return 'exact';
-    if (parts.length === 2) return 'month';
+  private precisionToPickerPrecision(precision: FuzzyDatePrecision): PickerPrecision {
+    if (precision === 'exact') return 'exact';
+    if (precision === 'month') return 'month';
     return 'year';
   }
 
@@ -178,19 +182,11 @@ export class FuzzyDatePickerComponent {
 
   private stringToDate(str: string): Date | null {
     if (!str) return null;
-    const parts = str.split('-');
-    if (parts.length >= 3) return new Date(+parts[0], +parts[1] - 1, +parts[2]);
-    if (parts.length === 2) return new Date(+parts[0], +parts[1] - 1, 1);
-    return new Date(+parts[0], 0, 1);
+    return new Date(str);
   }
 
-  private dateToString(date: Date | null, precision: PickerPrecision): string {
+  private dateToString(date: Date | null): string {
     if (!date) return '';
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    if (precision === 'exact') return `${year}-${month}-${day}`;
-    if (precision === 'month') return `${year}-${month}`;
-    return `${year}`;
+    return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())).toISOString();
   }
 }

@@ -2,7 +2,7 @@
 
 ## Authentication
 
-Kein Session-Auth. Alle Anfragen (außer `POST /auth/user-key`) erfordern `?userKey=<uuid>` als Query-Parameter.
+Kein Session-Auth. Die Identität wird serverseitig über `chayns.person.current.getId()` ermittelt. Vor dem ersten Aufruf muss `POST /auth/register` aufgerufen werden. `POST /auth/register` selbst benötigt keine Parameter.
 
 ---
 
@@ -12,10 +12,12 @@ Kein Session-Auth. Alle Anfragen (außer `POST /auth/user-key`) erfordern `?user
 
 ```ts
 {
-  id: string;                          // nur in Responses
-  precision: 'exact' | 'month' | 'year' | 'about' | 'estimated' | 'before' | 'after' | 'between';
-  date: string;                        // ISO-Datumsstring
-  dateTo?: string;                     // nur bei precision = 'between'
+  id: string;
+  precision: 'exact' | 'month' | 'year' | 'estimated' | 'before' | 'after' | 'between';
+  date: string;
+  datePrecision?: 'exact' | 'month' | 'year';
+  dateTo?: string;
+  dateToPrecision?: 'exact' | 'month' | 'year';
   note?: string;
 }
 ```
@@ -26,29 +28,38 @@ Kein Session-Auth. Alle Anfragen (außer `POST /auth/user-key`) erfordern `?user
 
 ### Auth
 
-#### `POST /auth/user-key`
-Erstellt einen neuen UserKey. Kein Query-Parameter erforderlich.
+#### `GET /auth/login`
+Prüft, ob der aktuelle chayns-Nutzer registriert ist. Die personId wird automatisch aus dem chayns-Runtime bezogen.
 
-**Request Body**
-```ts
-{ userName: string }
+**Response `200`**
+```json
+{ "id": "<personId>", "firstName": "string", "lastName": "string" }
 ```
+
+**Response `404`** — User not found
+
+---
+
+#### `POST /auth/register`
+Registriert den aktuellen chayns-Nutzer. Kein Request Body erforderlich — personId, firstName und lastName werden automatisch aus dem chayns-Runtime bezogen.
 
 **Response `201`**
 ```json
-{ "id": "uuid", "userName": "string" }
+{ "id": "<personId>", "firstName": "string", "lastName": "string" }
 ```
+
+**Response `409`** — Bereits registriert
 
 ---
 
 ### Persons
 
-#### `GET /persons?userKey=`
+#### `GET /persons`
 Gibt alle Personen des Users zurück.
 
 **Response `200`** — `PersonDto[]`
 
-#### `POST /persons?userKey=`
+#### `POST /persons`
 Erstellt eine neue Person.
 
 **Request Body** — `CreatePersonInput`
@@ -72,14 +83,14 @@ Erstellt eine neue Person.
 
 **Response `201`** — `PersonDto`
 
-#### `PUT /persons/:id?userKey=`
+#### `PUT /persons/:id`
 Ersetzt alle Felder einer Person vollständig.
 
 **Request Body** — identisch mit `CreatePersonInput`
 
 **Response `200`** — `PersonDto`
 
-#### `DELETE /persons/:id?userKey=`
+#### `DELETE /persons/:id`
 Löscht eine Person.
 
 **Response `204`**
@@ -112,12 +123,12 @@ Löscht eine Person.
 
 Modelliert Beziehungen zwischen zwei Personen. Die Richtung (personA → personB) ist bei `biological_parent`, `adoptive_parent` und `foster_parent` semantisch: personA ist Elternteil von personB.
 
-#### `GET /relations?userKey=`
+#### `GET /relations`
 Gibt alle Relationen des Users zurück.
 
 **Response `200`** — `RelationDto[]`
 
-#### `POST /relations?userKey=`
+#### `POST /relations`
 Erstellt eine neue Relation.
 
 **Request Body** — `CreateRelationInput`
@@ -135,14 +146,14 @@ Erstellt eine neue Relation.
 
 **Response `201`** — `RelationDto`
 
-#### `PUT /relations/:id?userKey=`
+#### `PUT /relations/:id`
 Aktualisiert eine Relation vollständig.
 
 **Request Body** — identisch mit `CreateRelationInput`
 
 **Response `200`** — `RelationDto`
 
-#### `DELETE /relations/:id?userKey=`
+#### `DELETE /relations/:id`
 Löscht eine Relation.
 
 **Response `204`**
@@ -169,12 +180,12 @@ Löscht eine Relation.
 
 Wohnsitze einer Person. Eine Person kann mehrere Wohnsitze haben.
 
-#### `GET /residences?userKey=`
+#### `GET /residences`
 Gibt alle Wohnsitze des Users zurück.
 
 **Response `200`** — `ResidenceDto[]`
 
-#### `POST /residences?userKey=`
+#### `POST /residences`
 Erstellt einen neuen Wohnsitz.
 
 **Request Body** — `CreateResidenceInput`
@@ -192,14 +203,14 @@ Erstellt einen neuen Wohnsitz.
 
 **Response `201`** — `ResidenceDto`
 
-#### `PUT /residences/:id?userKey=`
+#### `PUT /residences/:id`
 Aktualisiert einen Wohnsitz vollständig.
 
 **Request Body** — identisch mit `CreateResidenceInput`
 
 **Response `200`** — `ResidenceDto`
 
-#### `DELETE /residences/:id?userKey=`
+#### `DELETE /residences/:id`
 Löscht einen Wohnsitz.
 
 **Response `204`**
@@ -221,3 +232,52 @@ Löscht einen Wohnsitz.
 ```
 
 ---
+
+### Admin
+
+Alle Admin-Routen erfordern `?password=<ADMIN_PASSWORD>` statt Nutzeridentifikation über die Runtime.
+
+#### `GET /admin/storage-data?password=&[userKeys]&[fuzzyDates]&[persons]&[relations]&[residences]`
+Gibt rohe Storage-Daten zurück. Jede optionale Flag (als Query-Param, beliebiger Wert) aktiviert die entsprechende Kollektion.
+
+**Response `200`**
+```ts
+{
+  userKeys?: UserKeyResource[];
+  fuzzyDates?: FuzzyDateResource[];
+  persons?: PersonResource[];
+  relations?: RelationshipResource[];
+  residences?: ResidenceResource[];
+}
+```
+
+#### `DELETE /admin/storage-data?password=&[userKeys]&[fuzzyDates]&[persons]&[relations]&[residences]`
+Löscht die ausgewählten Kollektionen.
+
+**Response `204`**
+
+#### `PUT /admin/user-key-creation?password=`
+Aktiviert oder deaktiviert die Registrierung neuer Nutzer.
+
+**Request Body**
+```json
+{ "enabled": true }
+```
+
+**Response `204`**
+
+---
+
+## Fehlerresponses
+
+| Status | Bedeutung |
+|--------|-----------|
+| `400` | Pflichtfeld fehlt (id, body) |
+| `401` | Nicht registriert oder ungültiges Admin-Passwort |
+| `404` | Ressource nicht gefunden |
+| `409` | Konflikt (z. B. bereits registriert) |
+
+**Body bei Fehler**
+```json
+{ "message": "Fehlerbeschreibung" }
+```

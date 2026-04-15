@@ -1,26 +1,31 @@
+<p-confirmDialog />
+
 <div class="welcome">
   <h1>Stammbaum</h1>
 
   @if (storedUser(); as user) {
-    <p>Willkommen zurück {{ user.userName }}</p>
+    <p>Willkommen zurück {{ user.firstName }} {{ user.lastName }}</p>
     <p-button label="Zum Editor" (onClick)="goToEditor()" />
   } @else {
     <input
       pInputText
       class="welcome__input"
-      [placeholder]="mode() === 'name' ? 'Name eingeben' : 'Schlüssel eingeben'"
-      [(ngModel)]="inputValue"
-      (keyup.enter)="goToEditor()"
+      placeholder="Benutzername"
+      [(ngModel)]="userName"
+    />
+    <p-password
+      class="welcome__input"
+      placeholder="Passwort"
+      [(ngModel)]="password"
+      [feedback]="false"
+      (keyup.enter)="login()"
     />
 
-    @if (mode() === 'name') {
-      <a class="key-link" (click)="switchToKeyMode()">Schlüssel eingeben</a>
-    }
-
     <p-button
-      label="Zum Editor"
-      [disabled]="!inputValue().trim()"
-      (onClick)="goToEditor()"
+      label="Anmelden"
+      [disabled]="!userName().trim() || !password().trim()"
+      [loading]="loading()"
+      (onClick)="login()"
     />
   }
 </div>
