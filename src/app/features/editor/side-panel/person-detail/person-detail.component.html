@@ -39,13 +39,13 @@
     }
 
     <div class="side-panel__residences">
-      <p-confirmpopup>
-        <ng-template #headless let-message let-cp="closeCallback">
+      <p-confirmpopup #residenceConfirm>
+        <ng-template #headless let-message>
           <div class="confirm-popup">
             <span>{{ message.message }}</span>
             <div class="confirm-popup__actions">
-              <p-button label="Ja, löschen" size="small" severity="danger" (onClick)="message.accept(); cp($event)" />
-              <p-button label="Abbrechen" size="small" [text]="true" severity="secondary" (onClick)="cp($event)" />
+              <p-button label="Ja, löschen" size="small" severity="danger" (onClick)="residenceConfirm.onAccept()" />
+              <p-button label="Abbrechen" size="small" severity="secondary" [outlined]="true" (onClick)="residenceConfirm.onReject()" />
             </div>
           </div>
         </ng-template>
