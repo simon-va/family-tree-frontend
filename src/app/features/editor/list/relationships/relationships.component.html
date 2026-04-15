@@ -1,7 +1,7 @@
 @if (relationsStore.error()) {
   <p>{{ relationsStore.error() }}</p>
 } @else {
-  <p-table [value]="filteredRelations()" [tableStyle]="{ 'min-width': '50rem' }" [loading]="relationsStore.loading()">
+  <p-table [value]="filteredRelations()" [scrollable]="true" scrollHeight="flex" [tableStyle]="{ 'min-width': '50rem' }" [loading]="relationsStore.loading()">
     <ng-template #caption>
       <div class="flex">
         <p-iconfield iconPosition="left" class="ml-auto">

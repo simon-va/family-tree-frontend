@@ -3,15 +3,15 @@ import { ButtonModule } from 'primeng/button';
 import { Divider } from 'primeng/divider';
 import { FuzzyDatePipe } from '../../../../shared/persons/fuzzy-date.pipe';
 import { PersonsStore } from '../../../../shared/persons/persons.store';
+import { PARENT_TYPES, RELATION_TYPE_LABELS } from '../../../../shared/relations/relation-type.pipe';
 import { Relation } from '../../../../shared/relations/relation.model';
-import { PARENT_TYPES, RELATION_TYPE_LABELS, RelationTypePipe } from '../../../../shared/relations/relation-type.pipe';
 import { RelationsStore } from '../../../../shared/relations/relations.store';
 import { SidePanelService } from '../side-panel.service';
 
 @Component({
   selector: 'app-relation-detail',
   standalone: true,
-  imports: [ButtonModule, Divider, FuzzyDatePipe, RelationTypePipe],
+  imports: [ButtonModule, Divider, FuzzyDatePipe],
   templateUrl: './relation-detail.component.html',
   styleUrl: './relation-detail.component.scss',
 })
