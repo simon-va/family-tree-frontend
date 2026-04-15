@@ -12,10 +12,12 @@ Kein Session-Auth. Die Identität wird serverseitig über `chayns.person.current
 
 ```ts
 {
-  id: string;                          // nur in Responses
-  precision: 'exact' | 'month' | 'year' | 'about' | 'estimated' | 'before' | 'after' | 'between';
-  date: string;                        // ISO-Datumsstring
-  dateTo?: string;                     // nur bei precision = 'between'
+  id: string;
+  precision: 'exact' | 'month' | 'year' | 'estimated' | 'before' | 'after' | 'between';
+  date: string;
+  datePrecision?: 'exact' | 'month' | 'year';
+  dateTo?: string;
+  dateToPrecision?: 'exact' | 'month' | 'year';
   note?: string;
 }
 ```

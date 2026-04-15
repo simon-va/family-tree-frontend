@@ -107,8 +107,8 @@ export class FuzzyDatePickerComponent {
     const current = this.value();
     const precision = current?.precision ?? 'exact';
     this.draftPrecision.set(precision);
-    this.pickerPrecisionDate.set(this.precisionToPickerPrecision(precision));
-    this.pickerPrecisionDateTo.set('year');
+    this.pickerPrecisionDate.set(current?.datePrecision ?? this.precisionToPickerPrecision(precision));
+    this.pickerPrecisionDateTo.set(current?.dateToPrecision ?? 'year');
     this.draftDate.set(this.stringToDate(current?.date ?? ''));
     this.draftDateTo.set(this.stringToDate(current?.dateTo ?? ''));
     this.draftNote.set(current?.note ?? '');
@@ -139,9 +139,15 @@ export class FuzzyDatePickerComponent {
     if (!date) return;
 
     const result: FuzzyDateInput = { precision, date };
+    if (this.showPickerPrecision()) {
+      result.datePrecision = this.pickerPrecisionDate();
+    }
     if (precision === 'between') {
       const dateTo = this.dateToString(this.draftDateTo());
-      if (dateTo) result.dateTo = dateTo;
+      if (dateTo) {
+        result.dateTo = dateTo;
+        result.dateToPrecision = this.pickerPrecisionDateTo();
+      }
     }
     if (this.draftNote().trim()) {
       result.note = this.draftNote().trim();
