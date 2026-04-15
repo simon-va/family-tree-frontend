@@ -8,5 +8,6 @@ import { RelationshipsComponent } from './relationships/relationships.component'
   standalone: true,
   imports: [TabsModule, PersonsComponent, RelationshipsComponent],
   templateUrl: './list.component.html',
+  styleUrl: './list.component.scss',
 })
 export class ListComponent {}

@@ -1,7 +1,7 @@
 @if (store.error()) {
   <p>{{ store.error() }}</p>
 } @else {
-  <p-table #dt [value]="store.persons()" [tableStyle]="{ 'min-width': '50rem' }" [loading]="store.loading()" [globalFilterFields]="['firstName', 'lastName']">
+  <p-table #dt [value]="store.persons()" [scrollable]="true" scrollHeight="flex" [tableStyle]="{ 'min-width': '50rem' }" [loading]="store.loading()" [globalFilterFields]="['firstName', 'lastName']">
     <ng-template #caption>
       <div class="flex">
         <p-iconfield iconPosition="left" class="ml-auto">

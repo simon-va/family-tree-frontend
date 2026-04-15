@@ -70,13 +70,26 @@
 
     <div class="relation-form__field">
       <label for="endReason">Endgrund</label>
-      <input
-        id="endReason"
-        pInputText
-        [ngModel]="endReason()"
-        (ngModelChange)="endReason.set($event)"
-        [disabled]="saving()"
-      />
+      @if (endReasonOptions().length > 0) {
+        <p-select
+          id="endReason"
+          [options]="endReasonOptions()"
+          [ngModel]="endReason()"
+          (ngModelChange)="endReason.set($event)"
+          [editable]="true"
+          placeholder="Endgrund auswählen oder eingeben"
+          [disabled]="saving()"
+          appendTo="body"
+        />
+      } @else {
+        <input
+          id="endReason"
+          pInputText
+          [ngModel]="endReason()"
+          (ngModelChange)="endReason.set($event)"
+          [disabled]="saving()"
+        />
+      }
     </div>
   </app-accordion>
 

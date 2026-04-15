@@ -3,11 +3,15 @@ import { Observable, tap } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { CreatePersonInput, Person } from './person.model';
 import { PersonsService } from './persons.service';
+import { RelationsStore } from '../relations/relations.store';
+import { ResidencesStore } from '../residences/residences.store';
 
 @Injectable({ providedIn: 'root' })
 export class PersonsStore {
   private readonly personsService = inject(PersonsService);
   private readonly messageService = inject(MessageService);
+  private readonly relationsStore = inject(RelationsStore);
+  private readonly residencesStore = inject(ResidencesStore);
 
   readonly persons = signal<Person[]>([]);
   readonly loading = signal(false);
@@ -47,6 +51,8 @@ export class PersonsStore {
     this.personsService.delete(id).subscribe({
       next: () => {
         this.persons.update((list) => list.filter((p) => p.id !== id));
+        this.relationsStore.load();
+        this.residencesStore.load();
         this.messageService.add({ severity: 'success', summary: 'Erfolg', detail: 'Person gelöscht.' });
       },
       error: () => {
