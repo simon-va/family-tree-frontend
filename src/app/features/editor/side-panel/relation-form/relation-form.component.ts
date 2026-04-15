@@ -10,6 +10,7 @@ import { AccordionComponent } from '../../../../shared/accordion/accordion.compo
 import { FuzzyDatePickerComponent } from '../../../../shared/persons/fuzzy-date-picker/fuzzy-date-picker.component';
 import { FuzzyDateInput } from '../../../../shared/persons/person.model';
 import { PersonsStore } from '../../../../shared/persons/persons.store';
+import { PARENT_TYPES, RELATION_TYPE_LABELS } from '../../../../shared/relations/relation-type.pipe';
 import { RelationType } from '../../../../shared/relations/relation.model';
 import { RelationsStore } from '../../../../shared/relations/relations.store';
 import { SidePanelService } from '../side-panel.service';
@@ -18,21 +19,6 @@ interface TypeOption {
   label: string;
   value: RelationType;
 }
-
-const PARENT_TYPES: RelationType[] = [
-  'biological_parent',
-  'adoptive_parent',
-  'foster_parent',
-];
-
-const TYPE_LABELS: Record<RelationType, string> = {
-  biological_parent: 'Biologisches Elternteil',
-  adoptive_parent: 'Adoptiv-Elternteil',
-  foster_parent: 'Pflegeelternteil',
-  spouse: 'Ehepartner/in',
-  partner: 'Partner/in',
-  engaged: 'Verlobt',
-};
 
 @Component({
   selector: 'app-relation-form',
@@ -87,7 +73,7 @@ export class RelationFormComponent implements OnInit {
     this.personOptions().filter((o) => o.value !== this.personAId()),
   );
 
-  readonly typeOptions: TypeOption[] = Object.entries(TYPE_LABELS).map(
+  readonly typeOptions: TypeOption[] = Object.entries(RELATION_TYPE_LABELS).map(
     ([value, label]) => ({ label, value: value as RelationType }),
   );
 
@@ -119,7 +105,7 @@ export class RelationFormComponent implements OnInit {
 
     const nameA = `${personA.firstName} ${personA.lastName}`;
     const nameB = `${personB.firstName} ${personB.lastName}`;
-    const typeLabel = TYPE_LABELS[t];
+    const typeLabel = RELATION_TYPE_LABELS[t];
 
     if (PARENT_TYPES.includes(t)) {
       return `${nameA} ist ${typeLabel} von ${nameB}`;

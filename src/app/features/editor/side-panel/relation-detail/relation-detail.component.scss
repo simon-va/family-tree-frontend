@@ -24,7 +24,17 @@
   &__name {
     font-size: 1.125rem;
     font-weight: 600;
-    margin: 0 0 1rem;
+    margin: 0 0 0.5rem;
+  }
+
+  &__preview {
+    background: var(--p-surface-100);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: var(--p-text-muted-color);
+    line-height: 1.5;
+    margin-bottom: 1rem;
   }
 
   &__details {

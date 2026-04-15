@@ -6,12 +6,13 @@ import { PersonDetailComponent } from './person-detail/person-detail.component';
 import { PersonFormComponent } from './person-form/person-form.component';
 import { RelationDetailComponent } from './relation-detail/relation-detail.component';
 import { RelationFormComponent } from './relation-form/relation-form.component';
+import { ResidenceFormComponent } from './residence-form/residence-form.component';
 import { SidePanelService } from './side-panel.service';
 
 @Component({
   selector: 'app-side-panel',
   standalone: true,
-  imports: [ButtonModule, PersonDetailComponent, PersonFormComponent, RelationFormComponent, RelationDetailComponent],
+  imports: [ButtonModule, PersonDetailComponent, PersonFormComponent, RelationFormComponent, RelationDetailComponent, ResidenceFormComponent],
   templateUrl: './side-panel.component.html',
   styleUrl: './side-panel.component.scss',
 })
@@ -40,6 +41,16 @@ export class SidePanelComponent {
   readonly editRelationId = computed(() => {
     const action = this.service.action();
     return action.type === 'relation-edit' ? action.relationId : null;
+  });
+
+  readonly residenceFormPersonId = computed(() => {
+    const action = this.service.action();
+    return action.type === 'residence-form' ? action.personId : null;
+  });
+
+  readonly editResidenceId = computed(() => {
+    const action = this.service.action();
+    return action.type === 'residence-edit' ? action.residenceId : null;
   });
 
   private static readonly STORAGE_KEY = 'side-panel-width';

@@ -5,17 +5,11 @@
       &amp;
       {{ personB()?.firstName }} {{ personB()?.lastName }}
     </h2>
+    @if (previewText()) {
+      <div class="side-panel__preview">{{ previewText() }}</div>
+    }
 
     <dl class="side-panel__details">
-      <dt>Typ</dt>
-      <dd>{{ relation().type | relationType }}</dd>
-
-      <dt>Person A</dt>
-      <dd>{{ personA()?.firstName }} {{ personA()?.lastName }}</dd>
-
-      <dt>Person B</dt>
-      <dd>{{ personB()?.firstName }} {{ personB()?.lastName }}</dd>
-
       <dt>Von</dt>
       <dd>{{ relation().startDate | fuzzyDate }}</dd>
 

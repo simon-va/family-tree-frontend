@@ -23,6 +23,12 @@
         @case ('relation-edit') {
           Beziehung bearbeiten
         }
+        @case ('residence-form') {
+          Neuen Wohnort erstellen
+        }
+        @case ('residence-edit') {
+          Wohnort bearbeiten
+        }
         @default {
           Unbekannt
         }
@@ -54,5 +60,11 @@
   }
   @if (editRelationId(); as id) {
     <app-relation-form [relationId]="id" />
+  }
+  @if (residenceFormPersonId(); as id) {
+    <app-residence-form [personId]="id" />
+  }
+  @if (editResidenceId(); as id) {
+    <app-residence-form [residenceId]="id" />
   }
 </div>

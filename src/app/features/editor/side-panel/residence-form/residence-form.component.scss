@@ -1,0 +1,43 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.residence-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+
+    label {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      resize: none;
+    }
+  }
+
+  &__actions {
+    flex-shrink: 0;
+    padding: 0 1rem 1rem;
+
+    &-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+  }
+}
