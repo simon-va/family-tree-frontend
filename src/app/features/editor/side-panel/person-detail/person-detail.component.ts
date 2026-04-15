@@ -1,10 +1,12 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { Divider } from 'primeng/divider';
 import { FuzzyDatePipe } from '../../../../shared/persons/fuzzy-date.pipe';
 import { GenderPipe } from '../../../../shared/persons/gender.pipe';
 import { Person } from '../../../../shared/persons/person.model';
 import { PersonsStore } from '../../../../shared/persons/persons.store';
+import { Residence } from '../../../../shared/residences/residence.model';
+import { ResidencesStore } from '../../../../shared/residences/residences.store';
 import { SidePanelService } from '../side-panel.service';
 
 @Component({
@@ -18,9 +20,18 @@ export class PersonDetailComponent {
   readonly person = input.required<Person>();
 
   private readonly personsStore = inject(PersonsStore);
+  private readonly residencesStore = inject(ResidencesStore);
   private readonly sidePanelService= inject(SidePanelService)
 
   readonly confirmDelete = signal(false);
+
+  readonly personResidences = computed(() =>
+    this.residencesStore.residences().filter((r) => r.personId === this.person().id),
+  );
+
+  formatAddress(residence: Residence): string {
+    return [residence.street, residence.city, residence.country].filter(Boolean).join(', ');
+  }
 
   onEdit(): void {
     this.sidePanelService.open({ type: 'person-edit', personId: this.person().id });

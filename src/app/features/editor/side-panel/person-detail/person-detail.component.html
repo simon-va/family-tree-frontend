@@ -37,6 +37,20 @@
         <p>{{ person().notes }}</p>
       </div>
     }
+
+    <div class="side-panel__residences">
+      <div class="side-panel__residences-header">
+        <p class="side-panel__residences-label">Wohnorte</p>
+        <p-button icon="pi pi-plus" [text]="true" size="small" severity="secondary" />
+      </div>
+      @for (residence of personResidences(); track residence.id) {
+        <div class="side-panel__residence-item">
+          <span class="side-panel__residence-address">{{ formatAddress(residence) }}</span>
+          <p-button icon="pi pi-pencil" [text]="true" size="small" severity="secondary" />
+          <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" />
+        </div>
+      }
+    </div>
   </div>
 
   <div class="last-action">
