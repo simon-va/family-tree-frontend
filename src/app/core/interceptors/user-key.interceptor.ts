@@ -1,19 +1,19 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { KeyService } from '../auth/key.service';
+import { AuthService } from '../auth/auth.service';
 
 export const userKeyInterceptor: HttpInterceptorFn = (req, next) => {
-  if (req.url.includes('/auth/user-key')) {
+  if (req.url.includes('auth.tobit.com')) {
     return next(req);
   }
 
-  const key = inject(KeyService).getKey();
-  if (!key) {
+  const token = inject(AuthService).getUserToken();
+  if (!token) {
     return next(req);
   }
 
   const authReq = req.clone({
-    params: req.params.set('userKey', key),
+    setHeaders: { Authorization: `Bearer ${token}` },
   });
 
   return next(authReq);
