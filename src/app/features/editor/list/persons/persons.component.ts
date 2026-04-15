@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -16,7 +16,7 @@ import { SidePanelService } from '../../side-panel/side-panel.service';
   templateUrl: './persons.component.html',
   styleUrl: './persons.component.scss',
 })
-export class PersonsComponent implements OnInit {
+export class PersonsComponent {
   readonly store = inject(PersonsStore);
   readonly sidePanelService = inject(SidePanelService);
   readonly selectedPersonId = computed(() => {
@@ -24,7 +24,4 @@ export class PersonsComponent implements OnInit {
     return action.type === 'person-detail' || action.type === 'person-edit'? action.personId : null;
   });
 
-  ngOnInit(): void {
-    this.store.load();
-  }
 }

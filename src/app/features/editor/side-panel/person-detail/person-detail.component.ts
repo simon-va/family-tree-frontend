@@ -1,5 +1,7 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
+import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { Divider } from 'primeng/divider';
 import { FuzzyDatePipe } from '../../../../shared/persons/fuzzy-date.pipe';
 import { GenderPipe } from '../../../../shared/persons/gender.pipe';
@@ -12,7 +14,7 @@ import { SidePanelService } from '../side-panel.service';
 @Component({
   selector: 'app-person-detail',
   standalone: true,
-  imports: [GenderPipe, FuzzyDatePipe, ButtonModule, Divider],
+  imports: [GenderPipe, FuzzyDatePipe, ButtonModule, ConfirmPopupModule, Divider],
   templateUrl: './person-detail.component.html',
   styleUrl: './person-detail.component.scss',
 })
@@ -21,7 +23,8 @@ export class PersonDetailComponent {
 
   private readonly personsStore = inject(PersonsStore);
   private readonly residencesStore = inject(ResidencesStore);
-  private readonly sidePanelService= inject(SidePanelService)
+  private readonly sidePanelService = inject(SidePanelService);
+  private readonly confirmationService = inject(ConfirmationService);
 
   readonly confirmDelete = signal(false);
 
@@ -39,6 +42,14 @@ export class PersonDetailComponent {
 
   onEditResidence(residenceId: string): void {
     this.sidePanelService.open({ type: 'residence-edit', residenceId });
+  }
+
+  onDeleteResidence(event: Event, residenceId: string): void {
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: 'Wohnort wirklich löschen?',
+      accept: () => this.residencesStore.delete(residenceId),
+    });
   }
 
   onEdit(): void {
