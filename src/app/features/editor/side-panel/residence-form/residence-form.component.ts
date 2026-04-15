@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { Divider } from 'primeng/divider';
 import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
 import { Textarea } from 'primeng/textarea';
 import { finalize } from 'rxjs';
 import { AccordionComponent } from '../../../../shared/accordion/accordion.component';
@@ -10,11 +11,12 @@ import { FuzzyDatePickerComponent } from '../../../../shared/persons/fuzzy-date-
 import { FuzzyDateInput } from '../../../../shared/persons/person.model';
 import { ResidencesStore } from '../../../../shared/residences/residences.store';
 import { SidePanelService } from '../side-panel.service';
+import { COUNTRY_OPTIONS } from '../../../../shared/residences/residence.model';
 
 @Component({
   selector: 'app-residence-form',
   standalone: true,
-  imports: [FormsModule, ButtonModule, InputTextModule, Textarea, FuzzyDatePickerComponent, Divider, AccordionComponent],
+  imports: [FormsModule, ButtonModule, InputTextModule, SelectModule, Textarea, FuzzyDatePickerComponent, Divider, AccordionComponent],
   templateUrl: './residence-form.component.html',
   styleUrl: './residence-form.component.scss',
 })
@@ -35,6 +37,8 @@ export class ResidenceFormComponent implements OnInit {
   readonly endDate = signal<FuzzyDateInput | null>(null);
 
   private resolvedPersonId: string | null = null;
+
+  readonly countryOptions = COUNTRY_OPTIONS;
 
   ngOnInit(): void {
     const rid = this.residenceId();

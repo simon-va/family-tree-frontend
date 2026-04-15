@@ -23,12 +23,15 @@
 
   <div class="residence-form__field">
     <label for="country">Land</label>
-    <input
+    <p-select
       id="country"
-      pInputText
+      [options]="countryOptions"
       [ngModel]="country()"
       (ngModelChange)="country.set($event)"
+      [editable]="true"
+      placeholder="Land auswählen oder eingeben"
       [disabled]="saving()"
+      appendTo="body"
     />
   </div>
 
