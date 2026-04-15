@@ -7,4 +7,4 @@ export type PanelAction =
   | { type: 'relation-detail'; relationId: string }
   | { type: 'relation-edit'; relationId: string }
   | { type: 'residence-form'; personId: string }
-  | { type: 'residence-edit'; residenceId: string };
+  | { type: 'residence-edit'; residenceId: string; personId: string };

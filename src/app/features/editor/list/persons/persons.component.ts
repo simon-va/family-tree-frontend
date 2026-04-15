@@ -21,7 +21,8 @@ export class PersonsComponent {
   readonly sidePanelService = inject(SidePanelService);
   readonly selectedPersonId = computed(() => {
     const action = this.sidePanelService.action();
-    return action.type === 'person-detail' || action.type === 'person-edit'? action.personId : null;
+    return action.type === 'person-detail' || action.type === 'person-edit' || action.type === 'residence-form' || action.type === 'residence-edit'
+      ? action.personId : null;
   });
 
 }

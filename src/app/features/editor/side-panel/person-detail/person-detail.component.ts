@@ -41,7 +41,7 @@ export class PersonDetailComponent {
   }
 
   onEditResidence(residenceId: string): void {
-    this.sidePanelService.open({ type: 'residence-edit', residenceId });
+    this.sidePanelService.open({ type: 'residence-edit', residenceId, personId: this.person().id });
   }
 
   onDeleteResidence(event: Event, residenceId: string): void {
