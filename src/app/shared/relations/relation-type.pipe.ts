@@ -1,6 +1,12 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { RelationType } from './relation.model';
 
+export const PARENT_TYPES: RelationType[] = [
+  'biological_parent',
+  'adoptive_parent',
+  'foster_parent',
+];
+
 export const RELATION_TYPE_LABELS: Record<RelationType, string> = {
   biological_parent: 'Biologisches Elternteil',
   adoptive_parent: 'Adoptiv-Elternteil',
