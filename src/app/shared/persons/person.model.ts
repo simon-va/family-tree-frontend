@@ -2,7 +2,6 @@ export type FuzzyDatePrecision =
   | 'exact'
   | 'month'
   | 'year'
-  | 'about'
   | 'estimated'
   | 'before'
   | 'after'

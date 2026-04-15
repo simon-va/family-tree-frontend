@@ -16,8 +16,6 @@ export class FuzzyDatePipe implements PipeTransform {
         return formatted;
       case 'year':
         return formatted;
-      case 'about':
-        return `um ${formatted}`;
       case 'estimated':
         return `ca. ${formatted}`;
       case 'before':
