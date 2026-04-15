@@ -93,6 +93,21 @@ export class RelationFormComponent implements OnInit {
     });
   });
 
+  readonly endReasonOptions = computed(() => {
+    const t = this.type();
+    if (t !== 'spouse') return [];
+    const aId = this.personAId();
+    const bId = this.personBId();
+    if (!aId || !bId) return [];
+    const persons = this.personsStore.persons();
+    const personA = persons.find((p) => p.id === aId);
+    const personB = persons.find((p) => p.id === bId);
+    if (!personA || !personB) return [];
+    const nameA = `${personA.firstName} ${personA.lastName}`;
+    const nameB = `${personB.firstName} ${personB.lastName}`;
+    return [`Tod von ${nameA}`, `Tod von ${nameB}`, 'Scheidung'];
+  });
+
   readonly previewText = computed(() => {
     const aId = this.personAId();
     const bId = this.personBId();
