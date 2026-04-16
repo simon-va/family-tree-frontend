@@ -1,9 +1,15 @@
 import { afterNextRender, Component, effect, ElementRef, inject, viewChild } from '@angular/core';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
+import 'leaflet-polylinedecorator';
 import { Residence, ResidenceLocationEntry } from '../../../shared/residences/residence.model';
 import { ResidencesStore } from '../../../shared/residences/residences.store';
 import { SidePanelService } from '../side-panel/side-panel.service';
+
+interface MoveEdge {
+  from: Residence;
+  to: Residence;
+}
 
 
 
@@ -20,6 +26,9 @@ export class MapComponent {
   private map: L.Map | null = null;
   private clusterGroup: L.MarkerClusterGroup | null = null;
   private markerData = new WeakMap<L.Marker, ResidenceLocationEntry>();
+  private markerByResidenceId = new Map<string, L.Marker>();
+  private moveLineGroup: L.LayerGroup | null = null;
+  private currentEdges: MoveEdge[] = [];
 
   private readonly markerIcon = L.divIcon({
     html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 41" width="25" height="41">
@@ -71,7 +80,11 @@ export class MapComponent {
       iconCreateFunction: () => this.clusterIcon,
     });
     this.clusterGroup.on('clusterclick', (e) => this.onClusterClick(e));
+    this.clusterGroup.on('animationend', () => this.renderMoveLines());
     this.map.addLayer(this.clusterGroup);
+
+    this.moveLineGroup = L.layerGroup().addTo(this.map);
+
     this.renderMarkers(this.residencesStore.residences());
   }
 
@@ -94,6 +107,7 @@ export class MapComponent {
     if (!this.clusterGroup) return;
     this.clusterGroup.clearLayers();
     this.markerData = new WeakMap();
+    this.markerByResidenceId = new Map();
 
     const groups = this.groupResidences(residences);
 
@@ -101,9 +115,87 @@ export class MapComponent {
       const marker = L.marker([group.lat, group.lng], { icon: this.markerIcon });
       this.markerData.set(marker, group);
 
+      for (const r of group.residences) {
+        this.markerByResidenceId.set(r.id, marker);
+      }
+
       marker.on('click', () => this.sidePanelService.open({ type: 'residence-location', locations: [group] }));
 
       this.clusterGroup.addLayer(marker);
+    }
+
+    this.currentEdges = this.computeMoveEdges(residences);
+    this.renderMoveLines();
+  }
+
+  private computeMoveEdges(residences: Residence[]): MoveEdge[] {
+    const byPerson = new Map<string, Residence[]>();
+    for (const r of residences) {
+      if (r.lat == null || r.lng == null) continue;
+      const list = byPerson.get(r.personId) ?? [];
+      list.push(r);
+      byPerson.set(r.personId, list);
+    }
+
+    const edges: MoveEdge[] = [];
+    for (const [, personResidences] of byPerson) {
+      if (personResidences.length < 2) continue;
+      if (personResidences.some(r => !r.startDate)) continue;
+
+      personResidences.sort((a, b) => a.startDate!.date.localeCompare(b.startDate!.date));
+
+      for (let i = 0; i < personResidences.length - 1; i++) {
+        const from = personResidences[i];
+        const to = personResidences[i + 1];
+        if (from.lat === to.lat && from.lng === to.lng) continue;
+        edges.push({ from, to });
+      }
+    }
+    return edges;
+  }
+
+  private renderMoveLines(): void {
+    if (!this.moveLineGroup || !this.clusterGroup) return;
+    this.moveLineGroup.clearLayers();
+
+    const drawn = new Set<string>();
+
+    for (const edge of this.currentEdges) {
+      const fromMarker = this.markerByResidenceId.get(edge.from.id);
+      const toMarker = this.markerByResidenceId.get(edge.to.id);
+      if (!fromMarker || !toMarker) continue;
+
+      const fromVisible = this.clusterGroup.getVisibleParent(fromMarker);
+      const toVisible = this.clusterGroup.getVisibleParent(toMarker);
+      if (!fromVisible || !toVisible) continue;
+      if (fromVisible === toVisible) continue;
+
+      const fromLatLng = fromVisible.getLatLng();
+      const toLatLng = toVisible.getLatLng();
+      const dedupeKey = `${fromLatLng.lat},${fromLatLng.lng}->${toLatLng.lat},${toLatLng.lng}`;
+      if (drawn.has(dedupeKey)) continue;
+      drawn.add(dedupeKey);
+
+      const line = L.polyline([fromLatLng, toLatLng], {
+        color: '#6366f1',
+        weight: 2,
+        opacity: 0.6,
+      });
+
+      const decorator = L.polylineDecorator(line, {
+        patterns: [{
+          offset: '100%',
+          repeat: 0,
+          symbol: L.Symbol.arrowHead({
+            pixelSize: 10,
+            polygon: true,
+            pathOptions: { color: '#6366f1', fillOpacity: 0.8, weight: 0 },
+          }),
+        }],
+      });
+
+      this.moveLineGroup.addLayer(line);
+      this.moveLineGroup.addLayer(decorator);
     }
   }
 
