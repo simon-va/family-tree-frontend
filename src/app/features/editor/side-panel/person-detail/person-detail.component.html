@@ -39,27 +39,12 @@
     }
 
     <div class="side-panel__residences">
-      <p-confirmpopup #residenceConfirm>
-        <ng-template #headless let-message>
-          <div class="confirm-popup">
-            <span>{{ message.message }}</span>
-            <div class="confirm-popup__actions">
-              <p-button label="Ja, löschen" size="small" severity="danger" (onClick)="residenceConfirm.onAccept()" />
-              <p-button label="Abbrechen" size="small" severity="secondary" [outlined]="true" (onClick)="residenceConfirm.onReject()" />
-            </div>
-          </div>
-        </ng-template>
-      </p-confirmpopup>
       <div class="side-panel__residences-header">
         <p class="side-panel__residences-label">Wohnorte</p>
         <p-button icon="pi pi-plus" [text]="true" size="small" severity="secondary" (onClick)="openResidenceForm()" />
       </div>
       @for (residence of personResidences(); track residence.id) {
-        <div class="side-panel__residence-item">
-          <span class="side-panel__residence-address">{{ formatAddress(residence) }}</span>
-          <p-button icon="pi pi-pencil" [text]="true" size="small" severity="secondary" (onClick)="onEditResidence(residence.id)" />
-          <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="onDeleteResidence($event, residence.id)" />
-        </div>
+        <app-residence-item [residence]="residence" (edit)="onEditResidence(residence.id)" (deleteConfirmed)="onDeleteResidence(residence.id)" />
       }
     </div>
   </div>
@@ -83,3 +68,4 @@
     }
   </div>
 </div>
+

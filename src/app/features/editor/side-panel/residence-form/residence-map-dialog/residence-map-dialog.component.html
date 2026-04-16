@@ -1,0 +1,30 @@
+<p-dialog
+  header="Wohnort auf Karte auswählen"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '80vw', height: '80vh' }"
+  (onShow)="onDialogShow()"
+  (onHide)="onDialogHide()"
+  [draggable]="false" 
+  [resizable]="false"
+>
+  <div class="dialog-body">
+    <div class="search-row">
+      <input
+        pInputText
+        [(ngModel)]="searchQuery"
+        (keydown.enter)="onSearch()"
+        placeholder="Adresse suchen..."
+        class="search-input"
+      />
+      <p-button icon="pi pi-search" (onClick)="onSearch()" />
+    </div>
+
+    <div #mapContainer class="map-container"></div>
+
+    <div class="action-row">
+      <p-button label="Speichern" icon="pi pi-check" [disabled]="!canSave()" (onClick)="onSave()" />
+      <p-button label="Abbrechen" severity="secondary" [outlined]="true" (onClick)="onCancel()" />
+    </div>
+  </div>
+</p-dialog>

@@ -196,6 +196,8 @@ Erstellt einen neuen Wohnsitz.
   country?: string;
   street?: string;
   notes?: string;
+  lat?: number;
+  lng?: number;
   startDate?: FuzzyDateInput;
   endDate?: FuzzyDateInput;
 }
@@ -226,6 +228,8 @@ Löscht einen Wohnsitz.
   country?: string;
   street?: string;
   notes?: string;
+  lat?: number;
+  lng?: number;
   startDate?: FuzzyDate;
   endDate?: FuzzyDate;
 }

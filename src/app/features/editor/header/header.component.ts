@@ -28,9 +28,9 @@ export class HeaderComponent {
 
   readonly viewOptions: ViewOption[] = [
     { label: 'Liste', value: 'list' },
-    { label: 'Baum', value: 'tree' },
+    { label: 'Baum', value: 'tree', disabled: true },
     { label: 'Zeitstrahl', value: 'timeline', disabled: true },
-    { label: 'Karte', value: 'map', disabled: true },
+    { label: 'Karte', value: 'map' },
   ];
 
   private readonly currentUrl = toSignal(

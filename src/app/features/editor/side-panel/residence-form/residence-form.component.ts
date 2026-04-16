@@ -12,11 +12,12 @@ import { FuzzyDateInput } from '../../../../shared/persons/person.model';
 import { ResidencesStore } from '../../../../shared/residences/residences.store';
 import { SidePanelService } from '../side-panel.service';
 import { COUNTRY_OPTIONS } from '../../../../shared/residences/residence.model';
+import { MapSelectionResult, ResidenceMapDialogComponent } from './residence-map-dialog/residence-map-dialog.component';
 
 @Component({
   selector: 'app-residence-form',
   standalone: true,
-  imports: [FormsModule, ButtonModule, InputTextModule, SelectModule, Textarea, FuzzyDatePickerComponent, Divider, AccordionComponent],
+  imports: [FormsModule, ButtonModule, InputTextModule, SelectModule, Textarea, FuzzyDatePickerComponent, Divider, AccordionComponent, ResidenceMapDialogComponent],
   templateUrl: './residence-form.component.html',
   styleUrl: './residence-form.component.scss',
 })
@@ -28,17 +29,32 @@ export class ResidenceFormComponent implements OnInit {
   readonly residenceId = input<string | null>(null);
 
   readonly saving = signal(false);
+  readonly showMapDialog = signal(false);
 
   readonly street = signal('');
   readonly city = signal('');
   readonly country = signal('');
   readonly notes = signal('');
+  readonly lat = signal<number | null>(null);
+  readonly lng = signal<number | null>(null);
   readonly startDate = signal<FuzzyDateInput | null>(null);
   readonly endDate = signal<FuzzyDateInput | null>(null);
 
   private resolvedPersonId: string | null = null;
 
   readonly countryOptions = COUNTRY_OPTIONS;
+
+  openMapDialog(): void {
+    this.showMapDialog.set(true);
+  }
+
+  onMapCoordsSelected(result: MapSelectionResult): void {
+    this.lat.set(result.lat);
+    this.lng.set(result.lng);
+    if (result.street) this.street.set(result.street);
+    if (result.city) this.city.set(result.city);
+    if (result.country) this.country.set(result.country);
+  }
 
   ngOnInit(): void {
     const rid = this.residenceId();
@@ -50,6 +66,8 @@ export class ResidenceFormComponent implements OnInit {
         this.city.set(r.city ?? '');
         this.country.set(r.country ?? '');
         this.notes.set(r.notes ?? '');
+        this.lat.set(r.lat ?? null);
+        this.lng.set(r.lng ?? null);
         this.startDate.set(r.startDate ? { precision: r.startDate.precision, date: r.startDate.date, dateTo: r.startDate.dateTo, note: r.startDate.note } : null);
         this.endDate.set(r.endDate ? { precision: r.endDate.precision, date: r.endDate.date, dateTo: r.endDate.dateTo, note: r.endDate.note } : null);
       }
@@ -69,6 +87,8 @@ export class ResidenceFormComponent implements OnInit {
       ...(this.city().trim() && { city: this.city().trim() }),
       ...(this.country().trim() && { country: this.country().trim() }),
       ...(this.notes().trim() && { notes: this.notes().trim() }),
+      ...(this.lat() != null && { lat: this.lat()! }),
+      ...(this.lng() != null && { lng: this.lng()! }),
       ...(this.startDate() && { startDate: this.startDate()! }),
       ...(this.endDate() && { endDate: this.endDate()! }),
     };
