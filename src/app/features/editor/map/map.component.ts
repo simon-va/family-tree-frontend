@@ -2,6 +2,7 @@ import { afterNextRender, Component, computed, effect, ElementRef, inject, viewC
 import * as L from 'leaflet';
 import { Residence } from '../../../shared/residences/residence.model';
 import { ResidencesStore } from '../../../shared/residences/residences.store';
+import { SidePanelService } from '../side-panel/side-panel.service';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -23,6 +24,7 @@ interface GroupedResidence {
 })
 export class MapComponent {
   private readonly residencesStore = inject(ResidencesStore);
+  private readonly sidePanelService = inject(SidePanelService);
   private readonly mapContainer = viewChild<ElementRef<HTMLDivElement>>('mapContainer');
 
   private map: L.Map | null = null;
@@ -85,6 +87,12 @@ export class MapComponent {
         return parts.length > 0 ? parts.join(', ') : 'Unbekannter Ort';
       });
       marker.bindPopup(lines.join('<br>'));
+
+      const uniquePersonIds = new Set(group.residences.map((r) => r.personId));
+      if (uniquePersonIds.size === 1) {
+        const personId = uniquePersonIds.values().next().value!;
+        marker.on('click', () => this.sidePanelService.open({ type: 'person-detail', personId }));
+      }
 
       this.markerLayer.addLayer(marker);
     }
