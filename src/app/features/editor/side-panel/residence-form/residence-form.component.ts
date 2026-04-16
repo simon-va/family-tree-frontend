@@ -12,7 +12,7 @@ import { FuzzyDateInput } from '../../../../shared/persons/person.model';
 import { ResidencesStore } from '../../../../shared/residences/residences.store';
 import { SidePanelService } from '../side-panel.service';
 import { COUNTRY_OPTIONS } from '../../../../shared/residences/residence.model';
-import { MapSelectionResult, ResidenceMapDialogComponent } from '../residence-map-dialog/residence-map-dialog.component';
+import { MapSelectionResult, ResidenceMapDialogComponent } from './residence-map-dialog/residence-map-dialog.component';
 
 @Component({
   selector: 'app-residence-form',
