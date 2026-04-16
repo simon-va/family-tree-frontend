@@ -29,6 +29,9 @@
         @case ('residence-edit') {
           Wohnort bearbeiten
         }
+        @case ('residence-location') {
+          Personen an diesem Ort
+        }
         @default {
           Unbekannt
         }
@@ -66,5 +69,8 @@
   }
   @if (editResidenceId(); as id) {
     <app-residence-form [residenceId]="id" />
+  }
+  @if (residenceLocation(); as loc) {
+    <app-residence-location [lat]="loc.lat" [lng]="loc.lng" />
   }
 </div>

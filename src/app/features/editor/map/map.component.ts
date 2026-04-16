@@ -93,6 +93,8 @@ export class MapComponent {
         const personId = uniquePersonIds.values().next().value!;
         const residenceId = group.residences[0].id;
         marker.on('click', () => this.sidePanelService.open({ type: 'person-detail', personId, residenceId }));
+      } else {
+        marker.on('click', () => this.sidePanelService.open({ type: 'residence-location', lat: group.lat, lng: group.lng }));
       }
 
       this.markerLayer.addLayer(marker);

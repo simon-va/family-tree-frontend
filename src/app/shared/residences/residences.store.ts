@@ -59,6 +59,10 @@ export class ResidencesStore {
     );
   }
 
+  getByLatLng(lat: number, lng: number): Residence[] {
+    return this.residences().filter((r) => r.lat === lat && r.lng === lng);
+  }
+
   delete(id: string): void {
     this.residencesService.delete(id).subscribe({
       next: () => {

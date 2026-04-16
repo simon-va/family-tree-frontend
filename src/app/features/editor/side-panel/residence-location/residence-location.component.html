@@ -1,0 +1,14 @@
+<div class="side-panel__content">
+  <div class="side-panel__scrollable">
+    <p class="side-panel__address">{{ address() }}</p>
+
+    <ul class="person-list">
+      @for (entry of persons(); track entry.person.id) {
+        <li class="person-item" (click)="openPersonDetail(entry.person.id, entry.residenceId)">
+          <span class="person-item__name">{{ entry.person.firstName }} {{ entry.person.lastName }}</span>
+          <i class="pi pi-chevron-right"></i>
+        </li>
+      }
+    </ul>
+  </div>
+</div>
