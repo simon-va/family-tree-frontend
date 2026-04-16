@@ -49,7 +49,8 @@ export class ResidenceMapDialogComponent {
       if (!el) return;
 
       if (!this.map) {
-        this.map = L.map(el).setView([50, 10], 4);
+        this.map = L.map(el, { zoomControl: false }).setView([50, 10], 4);
+        L.control.zoom({ position: 'bottomright' }).addTo(this.map);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
           subdomains: 'abcd',
