@@ -12,7 +12,7 @@ import { FuzzyDateInput } from '../../../../shared/persons/person.model';
 import { ResidencesStore } from '../../../../shared/residences/residences.store';
 import { SidePanelService } from '../side-panel.service';
 import { COUNTRY_OPTIONS } from '../../../../shared/residences/residence.model';
-import { ResidenceMapDialogComponent } from '../residence-map-dialog/residence-map-dialog.component';
+import { MapSelectionResult, ResidenceMapDialogComponent } from '../residence-map-dialog/residence-map-dialog.component';
 
 @Component({
   selector: 'app-residence-form',
@@ -48,9 +48,12 @@ export class ResidenceFormComponent implements OnInit {
     this.showMapDialog.set(true);
   }
 
-  onMapCoordsSelected(coords: { lat: number; lng: number }): void {
-    this.lat.set(coords.lat);
-    this.lng.set(coords.lng);
+  onMapCoordsSelected(result: MapSelectionResult): void {
+    this.lat.set(result.lat);
+    this.lng.set(result.lng);
+    if (result.street) this.street.set(result.street);
+    if (result.city) this.city.set(result.city);
+    if (result.country) this.country.set(result.country);
   }
 
   ngOnInit(): void {

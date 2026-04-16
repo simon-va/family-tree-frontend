@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, model, output, signal, viewChild } from '@angular/core';
+import { Component, computed, ElementRef, input, model, output, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
@@ -13,6 +13,14 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
+export interface MapSelectionResult {
+  lat: number;
+  lng: number;
+  street?: string;
+  city?: string;
+  country?: string;
+}
+
 @Component({
   selector: 'app-residence-map-dialog',
   standalone: true,
@@ -22,10 +30,12 @@ L.Icon.Default.mergeOptions({
 })
 export class ResidenceMapDialogComponent {
   readonly visible = model<boolean>(false);
-  readonly coordsSelected = output<{ lat: number; lng: number }>();
+  readonly initialCoords = input<{ lat: number; lng: number } | null>(null);
+  readonly coordsSelected = output<MapSelectionResult>();
 
   readonly searchQuery = signal('');
   readonly markerCoords = signal<{ lat: number; lng: number } | null>(null);
+  readonly addressData = signal<{ street?: string; city?: string; country?: string } | null>(null);
   readonly canSave = computed(() => this.markerCoords() !== null);
 
   readonly mapContainer = viewChild<ElementRef<HTMLDivElement>>('mapContainer');
@@ -50,6 +60,12 @@ export class ResidenceMapDialogComponent {
       this.map.invalidateSize();
       this.clearMarker();
       this.searchQuery.set('');
+
+      const coords = this.initialCoords();
+      if (coords) {
+        this.setMarker(coords.lat, coords.lng);
+        this.map.setView([coords.lat, coords.lng], 14);
+      }
     }, 100);
   }
 
@@ -61,21 +77,35 @@ export class ResidenceMapDialogComponent {
 
   onMapClick(e: L.LeafletMouseEvent): void {
     this.setMarker(e.latlng.lat, e.latlng.lng);
+    this.addressData.set(null);
   }
 
   onSearch(): void {
     const query = this.searchQuery().trim();
     if (!query || !this.map) return;
 
-    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${encodeURIComponent(query)}`)
       .then((res) => res.json())
       .then((results: any[]) => {
         if (results?.length > 0) {
-          const { lat, lon } = results[0];
-          const numLat = parseFloat(lat);
-          const numLng = parseFloat(lon);
+          const result = results[0];
+          const numLat = parseFloat(result.lat);
+          const numLng = parseFloat(result.lon);
           this.setMarker(numLat, numLng);
-          this.map!.flyTo([numLat, numLng], 14);
+          this.map!.setView([numLat, numLng], 14);
+
+          const addr = result.address;
+          if (addr) {
+            const road = addr.road ?? '';
+            const houseNumber = addr.house_number ?? '';
+            const street = [road, houseNumber].filter(Boolean).join(' ') || undefined;
+            const cityName = addr.city ?? addr.town ?? addr.village ?? addr.municipality;
+            const city = [addr.postcode, cityName].filter(Boolean).join(' ') || undefined;
+            const country = addr.country ?? undefined;
+            this.addressData.set({ street, city, country });
+          } else {
+            this.addressData.set(null);
+          }
         }
       });
   }
@@ -84,7 +114,8 @@ export class ResidenceMapDialogComponent {
     const coords = this.markerCoords();
     if (!coords) return;
 
-    this.coordsSelected.emit(coords);
+    const address = this.addressData();
+    this.coordsSelected.emit({ ...coords, ...address });
     this.visible.set(false);
     this.clearMarker();
   }
@@ -110,5 +141,6 @@ export class ResidenceMapDialogComponent {
       this.currentMarker = null;
     }
     this.markerCoords.set(null);
+    this.addressData.set(null);
   }
 }
