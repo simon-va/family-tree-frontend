@@ -1,6 +1,6 @@
 export type PanelAction =
   | { type: 'none' }
-  | { type: 'person-detail'; personId: string }
+  | { type: 'person-detail'; personId: string; residenceId?: string }
   | { type: 'person-form' }
   | { type: 'person-edit'; personId: string }
   | { type: 'relation-form' }

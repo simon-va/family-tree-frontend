@@ -3,6 +3,11 @@
   align-items: center;
   gap: 0.125rem;
   padding: 0.125rem 0;
+
+  &.highlighted {
+    background-color: var(--p-primary-50);
+    border-radius: 4px;
+  }
 }
 
 .residence-address {

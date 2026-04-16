@@ -91,7 +91,8 @@ export class MapComponent {
       const uniquePersonIds = new Set(group.residences.map((r) => r.personId));
       if (uniquePersonIds.size === 1) {
         const personId = uniquePersonIds.values().next().value!;
-        marker.on('click', () => this.sidePanelService.open({ type: 'person-detail', personId }));
+        const residenceId = group.residences[0].id;
+        marker.on('click', () => this.sidePanelService.open({ type: 'person-detail', personId, residenceId }));
       }
 
       this.markerLayer.addLayer(marker);

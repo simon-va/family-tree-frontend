@@ -11,9 +11,11 @@ import { Residence } from '../../../../../shared/residences/residence.model';
   imports: [ButtonModule, MenuModule, ConfirmPopupModule],
   templateUrl: './residence-item.component.html',
   styleUrl: './residence-item.component.scss',
+  host: { '[class.highlighted]': 'highlighted()' },
 })
 export class ResidenceItemComponent {
   readonly residence = input.required<Residence>();
+  readonly highlighted = input<boolean>(false);
   readonly edit = output<void>();
   readonly deleteConfirmed = output<void>();
 

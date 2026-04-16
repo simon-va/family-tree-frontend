@@ -25,6 +25,11 @@ export class PersonDetailComponent {
 
   readonly confirmDelete = signal(false);
 
+  readonly highlightedResidenceId = computed(() => {
+    const a = this.sidePanelService.action();
+    return a.type === 'person-detail' ? a.residenceId : undefined;
+  });
+
   readonly personResidences = computed(() =>
     this.residencesStore.residences().filter((r) => r.personId === this.person().id),
   );
