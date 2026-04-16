@@ -1,20 +1,18 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
-import { ConfirmationService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
-import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { Divider } from 'primeng/divider';
 import { FuzzyDatePipe } from '../../../../shared/persons/fuzzy-date.pipe';
 import { GenderPipe } from '../../../../shared/persons/gender.pipe';
 import { Person } from '../../../../shared/persons/person.model';
 import { PersonsStore } from '../../../../shared/persons/persons.store';
-import { Residence } from '../../../../shared/residences/residence.model';
 import { ResidencesStore } from '../../../../shared/residences/residences.store';
 import { SidePanelService } from '../side-panel.service';
+import { ResidenceItemComponent } from './residence-item/residence-item.component';
 
 @Component({
   selector: 'app-person-detail',
   standalone: true,
-  imports: [GenderPipe, FuzzyDatePipe, ButtonModule, ConfirmPopupModule, Divider],
+  imports: [GenderPipe, FuzzyDatePipe, ButtonModule, Divider, ResidenceItemComponent],
   templateUrl: './person-detail.component.html',
   styleUrl: './person-detail.component.scss',
 })
@@ -24,17 +22,12 @@ export class PersonDetailComponent {
   private readonly personsStore = inject(PersonsStore);
   private readonly residencesStore = inject(ResidencesStore);
   private readonly sidePanelService = inject(SidePanelService);
-  private readonly confirmationService = inject(ConfirmationService);
 
   readonly confirmDelete = signal(false);
 
   readonly personResidences = computed(() =>
     this.residencesStore.residences().filter((r) => r.personId === this.person().id),
   );
-
-  formatAddress(residence: Residence): string {
-    return [residence.street, residence.city, residence.country].filter(Boolean).join(', ');
-  }
 
   openResidenceForm(): void {
     this.sidePanelService.open({ type: 'residence-form', personId: this.person().id });
@@ -44,12 +37,8 @@ export class PersonDetailComponent {
     this.sidePanelService.open({ type: 'residence-edit', residenceId, personId: this.person().id });
   }
 
-  onDeleteResidence(event: Event, residenceId: string): void {
-    this.confirmationService.confirm({
-      target: event.target as EventTarget,
-      message: 'Wohnort wirklich löschen?',
-      accept: () => this.residencesStore.delete(residenceId),
-    });
+  onDeleteResidence(residenceId: string): void {
+    this.residencesStore.delete(residenceId);
   }
 
   onEdit(): void {
