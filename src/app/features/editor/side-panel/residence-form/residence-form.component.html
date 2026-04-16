@@ -1,4 +1,6 @@
 <div class="residence-form">
+  <p-button label="Auf Karte auswählen" icon="pi pi-map" [outlined]="true" severity="secondary" (onClick)="openMapDialog()" />
+
   <div class="residence-form__field">
     <label for="street">Straße</label>
     <input
@@ -100,3 +102,5 @@
     <p-button label="Abbrechen" severity="secondary" [outlined]="true" [disabled]="saving()" (click)="onCancel()" />
   </div>
 </div>
+
+<app-residence-map-dialog [(visible)]="showMapDialog" (coordsSelected)="onMapCoordsSelected($event)" />

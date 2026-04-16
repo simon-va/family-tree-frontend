@@ -12,11 +12,12 @@ import { FuzzyDateInput } from '../../../../shared/persons/person.model';
 import { ResidencesStore } from '../../../../shared/residences/residences.store';
 import { SidePanelService } from '../side-panel.service';
 import { COUNTRY_OPTIONS } from '../../../../shared/residences/residence.model';
+import { ResidenceMapDialogComponent } from '../residence-map-dialog/residence-map-dialog.component';
 
 @Component({
   selector: 'app-residence-form',
   standalone: true,
-  imports: [FormsModule, ButtonModule, InputTextModule, SelectModule, Textarea, FuzzyDatePickerComponent, Divider, AccordionComponent],
+  imports: [FormsModule, ButtonModule, InputTextModule, SelectModule, Textarea, FuzzyDatePickerComponent, Divider, AccordionComponent, ResidenceMapDialogComponent],
   templateUrl: './residence-form.component.html',
   styleUrl: './residence-form.component.scss',
 })
@@ -28,6 +29,7 @@ export class ResidenceFormComponent implements OnInit {
   readonly residenceId = input<string | null>(null);
 
   readonly saving = signal(false);
+  readonly showMapDialog = signal(false);
 
   readonly street = signal('');
   readonly city = signal('');
@@ -41,6 +43,15 @@ export class ResidenceFormComponent implements OnInit {
   private resolvedPersonId: string | null = null;
 
   readonly countryOptions = COUNTRY_OPTIONS;
+
+  openMapDialog(): void {
+    this.showMapDialog.set(true);
+  }
+
+  onMapCoordsSelected(coords: { lat: number; lng: number }): void {
+    this.lat.set(coords.lat);
+    this.lng.set(coords.lng);
+  }
 
   ngOnInit(): void {
     const rid = this.residenceId();
