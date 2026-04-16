@@ -31,6 +31,15 @@
     }
   }
 
+  &__row {
+    display: flex;
+    gap: 1rem;
+
+    .residence-form__field {
+      flex: 1;
+    }
+  }
+
   &__actions {
     flex-shrink: 0;
     padding: 0 1rem 1rem;

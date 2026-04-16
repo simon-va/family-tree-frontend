@@ -46,6 +46,33 @@
       <app-fuzzy-date-picker [(value)]="endDate" [disabled]="saving()" />
     </div>
 
+    <div class="residence-form__row">
+      <div class="residence-form__field">
+        <label for="lat">Breitengrad (Lat)</label>
+        <input
+          id="lat"
+          pInputText
+          type="number"
+          step="any"
+          [ngModel]="lat()"
+          (ngModelChange)="lat.set($event !== '' && $event != null ? +$event : null)"
+          [disabled]="saving()"
+        />
+      </div>
+      <div class="residence-form__field">
+        <label for="lng">Längengrad (Lng)</label>
+        <input
+          id="lng"
+          pInputText
+          type="number"
+          step="any"
+          [ngModel]="lng()"
+          (ngModelChange)="lng.set($event !== '' && $event != null ? +$event : null)"
+          [disabled]="saving()"
+        />
+      </div>
+    </div>
+
   </app-accordion>
 
   <div class="residence-form__field">

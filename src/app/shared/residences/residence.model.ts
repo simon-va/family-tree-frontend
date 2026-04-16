@@ -7,6 +7,8 @@ export interface Residence {
   country?: string;
   street?: string;
   notes?: string;
+  lat?: number;
+  lng?: number;
   startDate?: FuzzyDate;
   endDate?: FuzzyDate;
 }
@@ -17,6 +19,8 @@ export interface CreateResidenceInput {
   country?: string;
   street?: string;
   notes?: string;
+  lat?: number;
+  lng?: number;
   startDate?: FuzzyDateInput;
   endDate?: FuzzyDateInput;
 }

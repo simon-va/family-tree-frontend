@@ -33,6 +33,8 @@ export class ResidenceFormComponent implements OnInit {
   readonly city = signal('');
   readonly country = signal('');
   readonly notes = signal('');
+  readonly lat = signal<number | null>(null);
+  readonly lng = signal<number | null>(null);
   readonly startDate = signal<FuzzyDateInput | null>(null);
   readonly endDate = signal<FuzzyDateInput | null>(null);
 
@@ -50,6 +52,8 @@ export class ResidenceFormComponent implements OnInit {
         this.city.set(r.city ?? '');
         this.country.set(r.country ?? '');
         this.notes.set(r.notes ?? '');
+        this.lat.set(r.lat ?? null);
+        this.lng.set(r.lng ?? null);
         this.startDate.set(r.startDate ? { precision: r.startDate.precision, date: r.startDate.date, dateTo: r.startDate.dateTo, note: r.startDate.note } : null);
         this.endDate.set(r.endDate ? { precision: r.endDate.precision, date: r.endDate.date, dateTo: r.endDate.dateTo, note: r.endDate.note } : null);
       }
@@ -69,6 +73,8 @@ export class ResidenceFormComponent implements OnInit {
       ...(this.city().trim() && { city: this.city().trim() }),
       ...(this.country().trim() && { country: this.country().trim() }),
       ...(this.notes().trim() && { notes: this.notes().trim() }),
+      ...(this.lat() != null && { lat: this.lat()! }),
+      ...(this.lng() != null && { lng: this.lng()! }),
       ...(this.startDate() && { startDate: this.startDate()! }),
       ...(this.endDate() && { endDate: this.endDate()! }),
     };
