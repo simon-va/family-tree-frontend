@@ -1,5 +1,11 @@
 import { FuzzyDate, FuzzyDateInput } from '../persons/person.model';
 
+export interface ResidenceLocationEntry {
+  lat: number;
+  lng: number;
+  residences: Residence[];
+}
+
 export interface Residence {
   id: string;
   personId: string;

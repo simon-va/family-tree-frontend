@@ -56,7 +56,7 @@ export class SidePanelComponent {
 
   readonly residenceLocation = computed(() => {
     const action = this.service.action();
-    return action.type === 'residence-location' ? { lat: action.lat, lng: action.lng } : null;
+    return action.type === 'residence-location' ? { locations: action.locations } : null;
   });
 
   private static readonly STORAGE_KEY = 'side-panel-width';

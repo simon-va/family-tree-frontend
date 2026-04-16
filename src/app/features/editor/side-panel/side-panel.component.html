@@ -71,6 +71,6 @@
     <app-residence-form [residenceId]="id" />
   }
   @if (residenceLocation(); as loc) {
-    <app-residence-location [lat]="loc.lat" [lng]="loc.lng" />
+    <app-residence-location [locations]="loc.locations" />
   }
 </div>
