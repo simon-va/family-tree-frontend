@@ -19,6 +19,17 @@ import { SidePanelService } from '../../side-panel/side-panel.service';
 export class PersonsComponent {
   readonly store = inject(PersonsStore);
   readonly sidePanelService = inject(SidePanelService);
+  readonly sortedPersons = computed(() =>
+    [...this.store.persons()].sort((a, b) => {
+      const da = a.birthDate?.date;
+      const db = b.birthDate?.date;
+      if (!da && !db) return `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`);
+      if (!da) return 1;
+      if (!db) return -1;
+      return db.localeCompare(da);
+    }),
+  );
+
   readonly selectedPersonId = computed(() => {
     const action = this.sidePanelService.action();
     return action.type === 'person-detail' || action.type === 'person-edit' || action.type === 'residence-form' || action.type === 'residence-edit'
