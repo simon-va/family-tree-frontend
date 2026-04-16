@@ -129,28 +129,18 @@ export class MapComponent {
   }
 
   private computeMoveEdges(residences: Residence[]): MoveEdge[] {
-    const byPerson = new Map<string, Residence[]>();
-    for (const r of residences) {
-      if (r.lat == null || r.lng == null) continue;
-      const list = byPerson.get(r.personId) ?? [];
-      list.push(r);
-      byPerson.set(r.personId, list);
-    }
-
+    const byId = new Map<string, Residence>(residences.map((r) => [r.id, r]));
     const edges: MoveEdge[] = [];
-    for (const [, personResidences] of byPerson) {
-      if (personResidences.length < 2) continue;
-      if (personResidences.some(r => !r.startDate)) continue;
 
-      personResidences.sort((a, b) => a.startDate!.date.localeCompare(b.startDate!.date));
-
-      for (let i = 0; i < personResidences.length - 1; i++) {
-        const from = personResidences[i];
-        const to = personResidences[i + 1];
-        if (from.lat === to.lat && from.lng === to.lng) continue;
-        edges.push({ from, to });
-      }
+    for (const from of residences) {
+      if (!from.movedToResidenceId) continue;
+      if (from.lat == null || from.lng == null) continue;
+      const to = byId.get(from.movedToResidenceId);
+      if (!to || to.lat == null || to.lng == null) continue;
+      if (from.lat === to.lat && from.lng === to.lng) continue;
+      edges.push({ from, to });
     }
+
     return edges;
   }
 

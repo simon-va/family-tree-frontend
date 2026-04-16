@@ -17,6 +17,7 @@ export interface Residence {
   lng?: number;
   startDate?: FuzzyDate;
   endDate?: FuzzyDate;
+  movedToResidenceId?: string;
 }
 
 export interface CreateResidenceInput {
@@ -29,6 +30,7 @@ export interface CreateResidenceInput {
   lng?: number;
   startDate?: FuzzyDateInput;
   endDate?: FuzzyDateInput;
+  movedToResidenceId?: string;
 }
 
 export const COUNTRY_OPTIONS: string[] = [
