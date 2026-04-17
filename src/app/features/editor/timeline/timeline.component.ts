@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { FuzzyDate, Person } from '../../../shared/persons/person.model';
 import { FuzzyDatePipe } from '../../../shared/persons/fuzzy-date.pipe';
@@ -17,6 +18,7 @@ import {
   TimelineResidenceRow,
   TimeScale,
 } from './timeline.model';
+import { SidePanelService } from '../side-panel/side-panel.service';
 
 const PX_PER_YEAR = 14;
 const LABEL_COL_WIDTH = 200;
@@ -25,7 +27,7 @@ const PARTNER_TYPES: RelationType[] = ['spouse', 'partner', 'engaged'];
 @Component({
   selector: 'app-timeline',
   standalone: true,
-  imports: [TooltipModule, FuzzyDatePipe, TimelineEventDotComponent],
+  imports: [ButtonModule, TooltipModule, FuzzyDatePipe, TimelineEventDotComponent],
   templateUrl: './timeline.component.html',
   styleUrl: './timeline.component.scss',
 })
@@ -34,6 +36,7 @@ export class TimelineComponent {
   private readonly relationsStore = inject(RelationsStore);
   private readonly residencesStore = inject(ResidencesStore);
   private readonly fuzzyDatePipe = new FuzzyDatePipe();
+  private readonly sidePanelService = inject(SidePanelService);
 
   readonly expandedIds = signal<Set<string>>(new Set());
   readonly labelColWidth = LABEL_COL_WIDTH;
@@ -121,6 +124,11 @@ export class TimelineComponent {
         } satisfies TimelinePersonRow;
       });
   });
+
+  openPersonDetail(event: MouseEvent, personId: string): void {
+    event.stopPropagation();
+    this.sidePanelService.open({ type: 'person-detail', personId });
+  }
 
   toggle(personId: string): void {
     const row = this.rows().find((r) => r.person.id === personId);

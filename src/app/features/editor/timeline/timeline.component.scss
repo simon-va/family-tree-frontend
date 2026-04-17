@@ -4,7 +4,7 @@ $sub-row-height: 28px;
 $bar-height: 10px;
 $sub-bar-height: 8px;
 $dot-size: 10px;
-$grid-color: #e2e8f0;
+$grid-color: var(--p-surface-200);
 
 :host {
   display: flex;
@@ -36,7 +36,7 @@ $grid-color: #e2e8f0;
   position: sticky;
   top: 0;
   z-index: 3;
-  background: #fff;
+  background: var(--p-surface-0);
   border-bottom: 2px solid $grid-color;
   height: $row-height;
   align-items: center;
@@ -57,7 +57,7 @@ $grid-color: #e2e8f0;
 
   &--header {
     font-weight: 600;
-    color: #64748b;
+    color: var(--p-surface-500);
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -80,7 +80,7 @@ $grid-color: #e2e8f0;
   transform: translateX(-50%) translateY(-50%);
   font-size: 0.6875rem;
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--p-surface-400);
   user-select: none;
 }
 
@@ -116,10 +116,10 @@ $grid-color: #e2e8f0;
 }
 
 .person-block {
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--p-surface-100);
 
   &--expanded {
-    background: #f8fafc;
+    background: var(--p-surface-50);
 
     .person-label {
       font-weight: 600;
@@ -140,19 +140,30 @@ $grid-color: #e2e8f0;
   }
 
   &:hover {
-    background: #f1f5f9;
+    background: var(--p-surface-100);
   }
 }
 
 .person-label {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: space-between;
+  gap: 4px;
 
   .pi {
     font-size: 0.75rem;
-    color: #94a3b8;
+    color: var(--p-surface-400);
   }
+}
+
+.person-label__name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .life-bar {
@@ -196,7 +207,7 @@ $grid-color: #e2e8f0;
   gap: 4px;
   padding-left: 28px;
   font-size: 0.75rem;
-  color: #64748b;
+  color: var(--p-surface-500);
 }
 
 .sub-label__type {

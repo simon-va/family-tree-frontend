@@ -24,10 +24,20 @@
         <div class="person-block" [class.person-block--expanded]="isExpanded(row.person.id)">
           <div class="person-row" [class.person-row--expandable]="row.relationships.length > 0 || row.residences.length > 0" (click)="toggle(row.person.id)">
             <div class="timeline-label-col person-label">
-              @if (row.relationships.length > 0 || row.residences.length > 0) {
-                <i [class]="isExpanded(row.person.id) ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
-              }
-              {{ row.person.firstName }} {{ row.person.lastName }}
+              <span class="person-label__name">
+                @if (row.relationships.length > 0 || row.residences.length > 0) {
+                  <i [class]="isExpanded(row.person.id) ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
+                }
+                {{ row.person.firstName }} {{ row.person.lastName }}
+              </span>
+              <p-button
+                icon="pi pi-info-circle"
+                severity="secondary"
+                [rounded]="true"
+                [text]="true"
+                size="small"
+                (onClick)="openPersonDetail($event, row.person.id)"
+              />
             </div>
             <div class="timeline-track">
               @if (row.birthDate) {
