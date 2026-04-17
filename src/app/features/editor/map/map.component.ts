@@ -1,17 +1,24 @@
 import { afterNextRender, Component, effect, ElementRef, inject, viewChild } from '@angular/core';
-import * as L from 'leaflet';
-import 'leaflet.markercluster';
-import 'leaflet-polylinedecorator';
+import { Cluster, MarkerClusterer, MarkerClustererOptions, Renderer } from '@googlemaps/markerclusterer';
 import { Residence, ResidenceLocationEntry } from '../../../shared/residences/residence.model';
 import { ResidencesStore } from '../../../shared/residences/residences.store';
 import { SidePanelService } from '../side-panel/side-panel.service';
+
+class ExposedMarkerClusterer extends MarkerClusterer {
+  constructor(options: MarkerClustererOptions) {
+    super(options);
+  }
+  getClusters(): Cluster[] {
+    return this.clusters;
+  }
+}
 
 interface MoveEdge {
   from: Residence;
   to: Residence;
 }
 
-
+type AdvancedMarker = google.maps.marker.AdvancedMarkerElement;
 
 @Component({
   selector: 'app-map',
@@ -23,32 +30,12 @@ export class MapComponent {
   private readonly sidePanelService = inject(SidePanelService);
   private readonly mapContainer = viewChild<ElementRef<HTMLDivElement>>('mapContainer');
 
-  private map: L.Map | null = null;
-  private clusterGroup: L.MarkerClusterGroup | null = null;
-  private markerData = new WeakMap<L.Marker, ResidenceLocationEntry>();
-  private markerByResidenceId = new Map<string, L.Marker>();
-  private moveLineGroup: L.LayerGroup | null = null;
+  private map: google.maps.Map | null = null;
+  private clusterer: ExposedMarkerClusterer | null = null;
+  private markerData = new WeakMap<AdvancedMarker, ResidenceLocationEntry>();
+  private markerByResidenceId = new Map<string, AdvancedMarker>();
+  private moveLines: google.maps.Polyline[] = [];
   private currentEdges: MoveEdge[] = [];
-
-  private readonly markerIcon = L.divIcon({
-    html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 41" width="25" height="41">
-      <path d="M12.5 0C5.6 0 0 5.6 0 12.5C0 22.3 12.5 41 12.5 41S25 22.3 25 12.5C25 5.6 19.4 0 12.5 0z" fill="#22c55e" stroke="white" stroke-width="2"/>
-      <circle cx="12.5" cy="12.5" r="4.5" fill="white"/>
-    </svg>`,
-    className: '',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-  });
-
-  private readonly clusterIcon = L.divIcon({
-    html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 41" width="25" height="41">
-      <path d="M12.5 0C5.6 0 0 5.6 0 12.5C0 22.3 12.5 41 12.5 41S25 22.3 25 12.5C25 5.6 19.4 0 12.5 0z" fill="#3b82f6" stroke="white" stroke-width="2"/>
-      <circle cx="12.5" cy="12.5" r="4.5" fill="white"/>
-    </svg>`,
-    className: '',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-  });
 
   constructor() {
     afterNextRender(() => this.initMap());
@@ -60,30 +47,46 @@ export class MapComponent {
     });
   }
 
+  private createMarkerContent(color: string): HTMLElement {
+    const el = document.createElement('div');
+    el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 41" width="25" height="41">
+      <path d="M12.5 0C5.6 0 0 5.6 0 12.5C0 22.3 12.5 41 12.5 41S25 22.3 25 12.5C25 5.6 19.4 0 12.5 0z" fill="${color}" stroke="white" stroke-width="2"/>
+      <circle cx="12.5" cy="12.5" r="4.5" fill="white"/>
+    </svg>`;
+    return el;
+  }
+
   private initMap(): void {
     const el = this.mapContainer()?.nativeElement;
     if (!el) return;
 
-    this.map = L.map(el, { zoomControl: false }).setView([50, 10], 5);
-
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
-      subdomains: 'abcd',
-    }).addTo(this.map);
-
-    L.control.zoom({ position: 'bottomright' }).addTo(this.map);
-
-    this.clusterGroup = L.markerClusterGroup({
-      zoomToBoundsOnClick: false,
-      showCoverageOnHover: false,
-      spiderfyOnMaxZoom: false,
-      iconCreateFunction: () => this.clusterIcon,
+    // mapId is required for AdvancedMarkerElement — replace DEMO_MAP_ID with a real Map ID from Google Cloud Console
+    this.map = new google.maps.Map(el, {
+      center: { lat: 50, lng: 10 },
+      zoom: 5,
+      zoomControl: true,
+      zoomControlOptions: { position: google.maps.ControlPosition.RIGHT_BOTTOM },
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: false,
+      mapId: 'b513a364f3220e049a6f54a0',
     });
-    this.clusterGroup.on('clusterclick', (e) => this.onClusterClick(e));
-    this.clusterGroup.on('animationend', () => this.renderMoveLines());
-    this.map.addLayer(this.clusterGroup);
 
-    this.moveLineGroup = L.layerGroup().addTo(this.map);
+    const renderer: Renderer = {
+      render: ({ position }) =>
+        new google.maps.marker.AdvancedMarkerElement({
+          position,
+          content: this.createMarkerContent('#3b82f6'),
+        }),
+    };
+
+    this.clusterer = new ExposedMarkerClusterer({
+      map: this.map,
+      renderer,
+      onClusterClick: (_e, cluster) => this.onClusterClick(cluster),
+    });
+
+    this.map.addListener('idle', () => this.renderMoveLines());
 
     this.renderMarkers(this.residencesStore.residences());
   }
@@ -104,28 +107,34 @@ export class MapComponent {
   }
 
   private renderMarkers(residences: Residence[]): void {
-    if (!this.clusterGroup) return;
-    this.clusterGroup.clearLayers();
+    if (!this.clusterer || !this.map) return;
+    this.clusterer.clearMarkers();
     this.markerData = new WeakMap();
     this.markerByResidenceId = new Map();
 
     const groups = this.groupResidences(residences);
+    const markers: AdvancedMarker[] = [];
 
     for (const group of groups) {
-      const marker = L.marker([group.lat, group.lng], { icon: this.markerIcon });
-      this.markerData.set(marker, group);
+      const marker = new google.maps.marker.AdvancedMarkerElement({
+        position: { lat: group.lat, lng: group.lng },
+        content: this.createMarkerContent('#22c55e'),
+      });
 
+      this.markerData.set(marker, group);
       for (const r of group.residences) {
         this.markerByResidenceId.set(r.id, marker);
       }
 
-      marker.on('click', () => this.sidePanelService.open({ type: 'residence-location', locations: [group] }));
+      marker.addListener('click', () =>
+        this.sidePanelService.open({ type: 'residence-location', locations: [group] }),
+      );
 
-      this.clusterGroup.addLayer(marker);
+      markers.push(marker);
     }
 
+    this.clusterer.addMarkers(markers);
     this.currentEdges = this.computeMoveEdges(residences);
-    this.renderMoveLines();
   }
 
   private computeMoveEdges(residences: Residence[]): MoveEdge[] {
@@ -144,9 +153,25 @@ export class MapComponent {
     return edges;
   }
 
+  private getClusterForMarker(marker: AdvancedMarker): Cluster | null {
+    if (!this.clusterer) return null;
+    for (const cluster of this.clusterer.getClusters()) {
+      if (cluster.markers?.includes(marker)) return cluster;
+    }
+    return null;
+  }
+
+  private toLatLng(pos: google.maps.LatLng | google.maps.LatLngLiteral): google.maps.LatLng {
+    return pos instanceof google.maps.LatLng
+      ? pos
+      : new google.maps.LatLng((pos as google.maps.LatLngLiteral).lat, (pos as google.maps.LatLngLiteral).lng);
+  }
+
   private renderMoveLines(): void {
-    if (!this.moveLineGroup || !this.clusterGroup) return;
-    this.moveLineGroup.clearLayers();
+    if (!this.map) return;
+
+    for (const line of this.moveLines) line.setMap(null);
+    this.moveLines = [];
 
     const drawn = new Set<string>();
 
@@ -155,46 +180,46 @@ export class MapComponent {
       const toMarker = this.markerByResidenceId.get(edge.to.id);
       if (!fromMarker || !toMarker) continue;
 
-      const fromVisible = this.clusterGroup.getVisibleParent(fromMarker);
-      const toVisible = this.clusterGroup.getVisibleParent(toMarker);
-      if (!fromVisible || !toVisible) continue;
-      if (fromVisible === toVisible) continue;
+      const fromCluster = this.getClusterForMarker(fromMarker);
+      const toCluster = this.getClusterForMarker(toMarker);
+      if (!fromCluster || !toCluster) continue;
+      if (fromCluster === toCluster) continue;
 
-      const fromLatLng = fromVisible.getLatLng();
-      const toLatLng = toVisible.getLatLng();
-      const dedupeKey = `${fromLatLng.lat},${fromLatLng.lng}->${toLatLng.lat},${toLatLng.lng}`;
+      const fromLatLng = this.toLatLng(fromCluster.position);
+      const toLatLng = this.toLatLng(toCluster.position);
+      const dedupeKey = `${fromLatLng.lat()},${fromLatLng.lng()}->${toLatLng.lat()},${toLatLng.lng()}`;
       if (drawn.has(dedupeKey)) continue;
       drawn.add(dedupeKey);
 
-      const line = L.polyline([fromLatLng, toLatLng], {
-        color: '#6366f1',
-        weight: 2,
-        opacity: 0.6,
+      const line = new google.maps.Polyline({
+        path: [fromLatLng, toLatLng],
+        strokeColor: '#6366f1',
+        strokeWeight: 2,
+        strokeOpacity: 0.6,
+        icons: [
+          {
+            icon: {
+              path: google.maps.SymbolPath.FORWARD_OPEN_ARROW,
+              strokeColor: '#6366f1',
+              fillColor: '#6366f1',
+              fillOpacity: 0.8,
+              strokeWeight: 1,
+              scale: 3,
+            },
+            offset: '100%',
+          },
+        ],
+        map: this.map,
       });
 
-      const decorator = L.polylineDecorator(line, {
-        patterns: [{
-          offset: '100%',
-          repeat: 0,
-          symbol: L.Symbol.arrowHead({
-            pixelSize: 10,
-            polygon: true,
-            pathOptions: { color: '#6366f1', fillOpacity: 0.8, weight: 0 },
-          }),
-        }],
-      });
-
-      this.moveLineGroup.addLayer(line);
-      this.moveLineGroup.addLayer(decorator);
+      this.moveLines.push(line);
     }
   }
 
-  private onClusterClick(e: L.LeafletEvent): void {
-    const cluster = e.layer as L.MarkerCluster;
-    const childMarkers = cluster.getAllChildMarkers() as L.Marker[];
-
+  private onClusterClick(cluster: Cluster): void {
     const grouped = new Map<string, ResidenceLocationEntry>();
-    for (const marker of childMarkers) {
+
+    for (const marker of (cluster.markers ?? []) as AdvancedMarker[]) {
       const entry = this.markerData.get(marker);
       if (!entry) continue;
       const key = `${entry.lat},${entry.lng}`;
