@@ -37,6 +37,10 @@ export class MapComponent {
   private moveLines: google.maps.Polyline[] = [];
   private currentEdges: MoveEdge[] = [];
 
+  private cssVar(name: string, fallback: string): string {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+  }
+
   constructor() {
     afterNextRender(() => this.initMap());
 
@@ -76,7 +80,7 @@ export class MapComponent {
       render: ({ position }) =>
         new google.maps.marker.AdvancedMarkerElement({
           position,
-          content: this.createMarkerContent('#3b82f6'),
+          content: this.createMarkerContent(this.cssVar('--p-blue-500', '#3b82f6')),
         }),
     };
 
@@ -118,7 +122,7 @@ export class MapComponent {
     for (const group of groups) {
       const marker = new google.maps.marker.AdvancedMarkerElement({
         position: { lat: group.lat, lng: group.lng },
-        content: this.createMarkerContent('#22c55e'),
+        content: this.createMarkerContent(this.cssVar('--p-green-500', '#22c55e')),
       });
 
       this.markerData.set(marker, group);
@@ -193,15 +197,15 @@ export class MapComponent {
 
       const line = new google.maps.Polyline({
         path: [fromLatLng, toLatLng],
-        strokeColor: '#6366f1',
+        strokeColor: this.cssVar('--p-indigo-500', '#6366f1'),
         strokeWeight: 2,
         strokeOpacity: 0.6,
         icons: [
           {
             icon: {
               path: google.maps.SymbolPath.FORWARD_OPEN_ARROW,
-              strokeColor: '#6366f1',
-              fillColor: '#6366f1',
+              strokeColor: this.cssVar('--p-indigo-500', '#6366f1'),
+              fillColor: this.cssVar('--p-indigo-500', '#6366f1'),
               fillOpacity: 0.8,
               strokeWeight: 1,
               scale: 3,
