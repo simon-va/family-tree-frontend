@@ -1,0 +1,16 @@
+<p-confirmpopup #relationConfirm>
+  <ng-template #headless let-message>
+    <div class="confirm-popup">
+      <span>{{ message.message }}</span>
+      <div class="confirm-popup__actions">
+        <p-button label="Ja, löschen" size="small" severity="danger" (onClick)="relationConfirm.onAccept()" />
+        <p-button label="Abbrechen" size="small" severity="secondary" [outlined]="true" (onClick)="relationConfirm.onReject()" />
+      </div>
+    </div>
+  </ng-template>
+</p-confirmpopup>
+<p-menu #menu [model]="menuItems" [popup]="true" appendTo="body" />
+<span class="relation-label">{{ label() }}</span>
+<span #confirmAnchor class="confirm-anchor">
+  <p-button icon="pi pi-ellipsis-v" [text]="true" size="small" severity="secondary" (onClick)="openMenu(menu, $event, confirmAnchor)" />
+</span>

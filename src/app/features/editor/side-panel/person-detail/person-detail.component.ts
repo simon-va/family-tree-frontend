@@ -5,14 +5,16 @@ import { FuzzyDatePipe } from '../../../../shared/persons/fuzzy-date.pipe';
 import { GenderPipe } from '../../../../shared/persons/gender.pipe';
 import { Person } from '../../../../shared/persons/person.model';
 import { PersonsStore } from '../../../../shared/persons/persons.store';
+import { RelationsStore } from '../../../../shared/relations/relations.store';
 import { ResidencesStore } from '../../../../shared/residences/residences.store';
 import { SidePanelService } from '../side-panel.service';
+import { RelationItemComponent } from './relation-item/relation-item.component';
 import { ResidenceItemComponent } from './residence-item/residence-item.component';
 
 @Component({
   selector: 'app-person-detail',
   standalone: true,
-  imports: [GenderPipe, FuzzyDatePipe, ButtonModule, Divider, ResidenceItemComponent],
+  imports: [GenderPipe, FuzzyDatePipe, ButtonModule, Divider, ResidenceItemComponent, RelationItemComponent],
   templateUrl: './person-detail.component.html',
   styleUrl: './person-detail.component.scss',
 })
@@ -21,6 +23,7 @@ export class PersonDetailComponent {
 
   private readonly personsStore = inject(PersonsStore);
   private readonly residencesStore = inject(ResidencesStore);
+  private readonly relationsStore = inject(RelationsStore);
   private readonly sidePanelService = inject(SidePanelService);
 
   readonly confirmDelete = signal(false);
@@ -29,6 +32,12 @@ export class PersonDetailComponent {
     const a = this.sidePanelService.action();
     return a.type === 'person-detail' ? a.residenceId : undefined;
   });
+
+  readonly personRelations = computed(() =>
+    this.relationsStore.relations().filter(
+      (r) => r.personAId === this.person().id || r.personBId === this.person().id,
+    ),
+  );
 
   readonly personResidences = computed(() => {
     const residences = this.residencesStore.residences().filter((r) => r.personId === this.person().id);
@@ -54,6 +63,18 @@ export class PersonDetailComponent {
 
     return [...chain, ...standalone];
   });
+
+  openRelationForm(): void {
+    this.sidePanelService.open({ type: 'relation-form' });
+  }
+
+  onViewRelation(relationId: string): void {
+    this.sidePanelService.open({ type: 'relation-detail', relationId });
+  }
+
+  onDeleteRelation(relationId: string): void {
+    this.relationsStore.delete(relationId);
+  }
 
   openResidenceForm(): void {
     this.sidePanelService.open({ type: 'residence-form', personId: this.person().id });

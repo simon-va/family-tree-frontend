@@ -47,6 +47,16 @@
         <app-residence-item [residence]="residence" [highlighted]="highlightedResidenceId() === residence.id" (edit)="onEditResidence(residence.id)" (deleteConfirmed)="onDeleteResidence(residence.id)" />
       }
     </div>
+
+    <div class="side-panel__relations">
+      <div class="side-panel__relations-header">
+        <p class="side-panel__relations-label">Beziehungen</p>
+        <p-button icon="pi pi-plus" [text]="true" size="small" severity="secondary" (onClick)="openRelationForm()" />
+      </div>
+      @for (relation of personRelations(); track relation.id) {
+        <app-relation-item [relation]="relation" [personId]="person().id" (viewRelation)="onViewRelation(relation.id)" (deleteConfirmed)="onDeleteRelation(relation.id)" />
+      }
+    </div>
   </div>
 
   <div class="last-action">
