@@ -7,6 +7,7 @@
   &.highlighted {
     background-color: var(--p-primary-50);
     border-radius: 4px;
+    color: var(--p-highlight-color);
   }
 
   &:hover {
