@@ -75,6 +75,22 @@
       </div>
     </div>
 
+    <div class="residence-form__field">
+      <label for="movedToResidence">Umgezogen nach</label>
+      <p-select
+        id="movedToResidence"
+        [options]="personResidenceOptions()"
+        optionLabel="label"
+        optionValue="value"
+        [ngModel]="movedToResidenceId()"
+        (ngModelChange)="movedToResidenceId.set($event)"
+        [showClear]="true"
+        placeholder="Keine Angabe"
+        [disabled]="saving()"
+        appendTo="body"
+      />
+    </div>
+
   </app-accordion>
 
   <div class="residence-form__field">

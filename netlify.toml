@@ -1,0 +1,3 @@
+[build]
+  command = "mkdir -p src/environments && echo \"export const environment = { production: true, googleMapsApiKey: '$GOOGLE_MAPS_API_KEY' };\" > src/environments/environment.ts && ng build --configuration production"
+  publish = "dist/family-tree-frontend/browser"
