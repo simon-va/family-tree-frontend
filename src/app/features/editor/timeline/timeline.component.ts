@@ -280,13 +280,14 @@ export class TimelineComponent {
 
   dateToLeft(date: Date): number {
     const scale = this.timeScale();
-    const yearOffset = date.getFullYear() + date.getMonth() / 12 + date.getDate() / 365 - scale.minYear;
-    return yearOffset * scale.pxPerYear;
+    return (date.getFullYear() - scale.minYear) * scale.pxPerYear;
   }
 
   barWidth(start: Date, end: Date | null): number {
     const endDate = end ?? new Date();
-    return Math.max(2, this.dateToLeft(endDate) - this.dateToLeft(start));
+    const endDatePlusOne = new Date(endDate);
+    endDatePlusOne.setFullYear(endDatePlusOne.getFullYear() + 1);
+    return Math.max(2, this.dateToLeft(endDatePlusOne) - this.dateToLeft(start));
   }
 
   decadeLeft(year: number): number {
