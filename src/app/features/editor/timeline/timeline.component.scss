@@ -1,0 +1,282 @@
+$life-bar: #64748b;
+$birth: #22c55e;
+$death: #ef4444;
+$child-born: #f59e0b;
+$rel-spouse: #8b5cf6;
+$rel-partner: #ec4899;
+$rel-engaged: #f97316;
+$residence: #3b82f6;
+
+$label-width: 200px;
+$row-height: 36px;
+$sub-row-height: 28px;
+$bar-height: 10px;
+$sub-bar-height: 8px;
+$dot-size: 10px;
+$grid-color: #e2e8f0;
+
+:host {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.timeline-container {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.timeline-scroll {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+}
+
+.timeline-canvas {
+  position: relative;
+  min-height: 100%;
+}
+
+.timeline-header {
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: #fff;
+  border-bottom: 2px solid $grid-color;
+  height: $row-height;
+  align-items: center;
+}
+
+.timeline-label-col {
+  width: $label-width;
+  min-width: $label-width;
+  flex-shrink: 0;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  padding: 0 12px;
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &--header {
+    font-weight: 600;
+    color: #64748b;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+.timeline-track {
+  flex: 1;
+  position: relative;
+  height: 100%;
+
+  &--header {
+    position: relative;
+  }
+}
+
+.decade-label {
+  position: absolute;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #94a3b8;
+  user-select: none;
+}
+
+.timeline-grid {
+  display: flex;
+  position: absolute;
+  top: $row-height;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.timeline-grid__spacer {
+  width: $label-width;
+  min-width: $label-width;
+  flex-shrink: 0;
+}
+
+.timeline-grid__lines {
+  flex: 1;
+  position: relative;
+}
+
+.grid-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: $grid-color;
+  opacity: 0.6;
+}
+
+.person-block {
+  border-bottom: 1px solid #f1f5f9;
+
+  &--expanded {
+    background: #f8fafc;
+
+    .person-label {
+      font-weight: 600;
+    }
+  }
+}
+
+.person-row {
+  display: flex;
+  height: $row-height;
+  align-items: center;
+  cursor: default;
+  position: relative;
+  z-index: 1;
+
+  &--expandable {
+    cursor: pointer;
+  }
+
+  &:hover {
+    background: #f1f5f9;
+  }
+}
+
+.person-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  .pi {
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+}
+
+.life-bar {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: $bar-height;
+  background: $life-bar;
+  border-radius: calc($bar-height / 2);
+  opacity: 0.7;
+  cursor: default;
+}
+
+.event-dot {
+  position: absolute;
+  top: 50%;
+  width: $dot-size;
+  height: $dot-size;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  cursor: default;
+  z-index: 1;
+  border: 2px solid #fff;
+
+  &--birth {
+    background: $birth;
+  }
+
+  &--death {
+    background: $death;
+  }
+
+  &--child-born {
+    background: $child-born;
+  }
+
+  &--relationship-start,
+  &--relationship-end {
+    background: $rel-spouse;
+  }
+
+  &--residence-start,
+  &--residence-end {
+    background: $residence;
+  }
+}
+
+.sub-rows {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.25s ease;
+  position: relative;
+  z-index: 1;
+
+  &--open {
+    grid-template-rows: 1fr;
+  }
+}
+
+.sub-rows__inner {
+  min-height: 0;
+  overflow: clip;
+}
+
+.sub-row {
+  display: flex;
+  height: $sub-row-height;
+  align-items: center;
+  position: relative;
+}
+
+.sub-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-left: 28px;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.sub-label__type {
+  font-weight: 500;
+}
+
+.sub-label__icon {
+  font-size: 0.75rem;
+}
+
+.sub-label__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sub-bar {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: $sub-bar-height;
+  border-radius: calc($sub-bar-height / 2);
+  opacity: 0.8;
+  cursor: default;
+
+  &--spouse {
+    background: $rel-spouse;
+  }
+
+  &--partner {
+    background: $rel-partner;
+  }
+
+  &--engaged {
+    background: $rel-engaged;
+  }
+
+  &--residence {
+    background: $residence;
+  }
+}

@@ -29,7 +29,7 @@ export class HeaderComponent {
   readonly viewOptions: ViewOption[] = [
     { label: 'Liste', value: 'list' },
     { label: 'Baum', value: 'tree', disabled: true },
-    { label: 'Zeitstrahl', value: 'timeline', disabled: true },
+    { label: 'Zeitstrahl', value: 'timeline' },
     { label: 'Karte', value: 'map' },
   ];
 
