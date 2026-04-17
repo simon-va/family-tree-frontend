@@ -22,7 +22,7 @@ const LABEL_COL_WIDTH = 200;
 @Component({
   selector: 'app-timeline',
   standalone: true,
-  imports: [TooltipModule],
+  imports: [TooltipModule, FuzzyDatePipe],
   templateUrl: './timeline.component.html',
   styleUrl: './timeline.component.scss',
 })

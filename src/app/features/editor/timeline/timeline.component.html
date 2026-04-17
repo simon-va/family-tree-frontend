@@ -81,6 +81,12 @@
           <div class="sub-rows" [class.sub-rows--open]="isExpanded(row.person.id)">
             <div class="sub-rows__inner">
               @for (rel of row.relationships; track rel.relation.id) {
+                <ng-template #relBarTooltip>
+                  <strong class="dot-tooltip__year">{{ rel.typeLabel }} {{ rel.partnerName }}</strong>
+                  <hr class="dot-tooltip__divider" />
+                  <div class="dot-tooltip__event">Beginn: {{ rel.relation.startDate | fuzzyDate }}</div>
+                  <div class="dot-tooltip__event">Ende: {{ rel.relation.endDate | fuzzyDate }}</div>
+                </ng-template>
                 <div class="sub-row">
                   <div class="timeline-label-col sub-label">
                     <span class="sub-label__type">{{ rel.typeLabel }}</span>
@@ -91,14 +97,21 @@
                       class="sub-bar sub-bar--relation sub-bar--{{ rel.relationType }}"
                       [style.left.px]="dateToLeft(rel.startDate)"
                       [style.width.px]="barWidth(rel.startDate, rel.endDate)"
-                      [pTooltip]="rel.tooltip"
+                      [pTooltip]="relBarTooltip"
                       tooltipPosition="top"
+                      tooltipStyleClass="dot-tooltip"
                     ></div>
                   </div>
                 </div>
               }
 
               @for (res of row.residences; track res.residence.id) {
+                <ng-template #resBarTooltip>
+                  <strong class="dot-tooltip__year">{{ res.address }}</strong>
+                  <hr class="dot-tooltip__divider" />
+                  <div class="dot-tooltip__event">Beginn: {{ res.residence.startDate | fuzzyDate }}</div>
+                  <div class="dot-tooltip__event">Ende: {{ res.residence.endDate | fuzzyDate }}</div>
+                </ng-template>
                 <div class="sub-row">
                   <div class="timeline-label-col sub-label">
                     <i class="pi pi-home sub-label__icon"></i>
@@ -109,8 +122,9 @@
                       class="sub-bar sub-bar--residence"
                       [style.left.px]="dateToLeft(res.startDate)"
                       [style.width.px]="barWidth(res.startDate, res.endDate)"
-                      [pTooltip]="res.tooltip"
+                      [pTooltip]="resBarTooltip"
                       tooltipPosition="top"
+                      tooltipStyleClass="dot-tooltip"
                     ></div>
                   </div>
                 </div>
