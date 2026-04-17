@@ -308,12 +308,19 @@ export class TimelineComponent {
     }
     return [...map.entries()]
       .sort(([a], [b]) => a - b)
-      .map(([year, evts]) => ({
-        year,
-        events: evts,
-        tooltip: evts.map((e) => e.tooltip).join('\n'),
-        cssClass: evts.length === 1 ? `event-dot--${evts[0].type}` : 'event-dot--multi',
-      }));
+      .map(([year, evts]) => {
+        let cssClass: string;
+        if (evts.length === 1) {
+          cssClass = `event-dot--${evts[0].type}`;
+        } else if (evts.some((e) => e.type === 'birth')) {
+          cssClass = 'event-dot--birth';
+        } else if (evts.some((e) => e.type === 'death')) {
+          cssClass = 'event-dot--death';
+        } else {
+          cssClass = 'event-dot--multi';
+        }
+        return { year, events: evts, tooltip: evts.map((e) => e.tooltip).join('\n'), cssClass };
+      });
   }
 
   private toDate(fuzzy: FuzzyDate | undefined): Date | null {
