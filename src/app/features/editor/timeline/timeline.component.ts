@@ -9,6 +9,7 @@ import { RelationsStore } from '../../../shared/relations/relations.store';
 import { ResidencesStore } from '../../../shared/residences/residences.store';
 import {
   TimelineEvent,
+  TimelineEventGroup,
   TimelinePersonRow,
   TimelineRelationRow,
   TimelineResidenceRow,
@@ -236,11 +237,17 @@ export class TimelineComponent {
           }
         }
 
+        const birthDeathEvents = events.filter(
+          (e) => e.type === 'birth' || e.type === 'death' || e.type === 'child-born',
+        );
+
         return {
           person,
           birthDate,
           deathDate,
           events,
+          groupedEvents: this.groupByYear(events),
+          groupedBirthDeathEvents: this.groupByYear(birthDeathEvents),
           relationships: relationshipRows,
           residences: residenceRows,
         } satisfies TimelinePersonRow;
@@ -266,6 +273,11 @@ export class TimelineComponent {
     return this.expandedIds().has(personId);
   }
 
+  yearToLeft(year: number): number {
+    const scale = this.timeScale();
+    return (year - scale.minYear + 0.5) * scale.pxPerYear;
+  }
+
   dateToLeft(date: Date): number {
     const scale = this.timeScale();
     const yearOffset = date.getFullYear() + date.getMonth() / 12 + date.getDate() / 365 - scale.minYear;
@@ -280,6 +292,27 @@ export class TimelineComponent {
   decadeLeft(year: number): number {
     const scale = this.timeScale();
     return (year - scale.minYear) * scale.pxPerYear;
+  }
+
+  private groupByYear(events: TimelineEvent[]): TimelineEventGroup[] {
+    const map = new Map<number, TimelineEvent[]>();
+    for (const evt of events) {
+      const year = evt.date.getFullYear();
+      const arr = map.get(year);
+      if (arr) {
+        arr.push(evt);
+      } else {
+        map.set(year, [evt]);
+      }
+    }
+    return [...map.entries()]
+      .sort(([a], [b]) => a - b)
+      .map(([year, evts]) => ({
+        year,
+        events: evts,
+        tooltip: evts.map((e) => e.tooltip).join('\n'),
+        cssClass: evts.length === 1 ? `event-dot--${evts[0].type}` : 'event-dot--multi',
+      }));
   }
 
   private toDate(fuzzy: FuzzyDate | undefined): Date | null {

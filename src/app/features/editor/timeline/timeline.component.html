@@ -40,24 +40,22 @@
                 ></div>
 
                 @if (!isExpanded(row.person.id)) {
-                  @for (evt of row.events; track $index) {
+                  @for (grp of row.groupedEvents; track grp.year) {
                     <div
-                      class="event-dot event-dot--{{ evt.type }}"
-                      [style.left.px]="dateToLeft(evt.date)"
-                      [pTooltip]="evt.tooltip"
+                      [class]="'event-dot ' + grp.cssClass"
+                      [style.left.px]="yearToLeft(grp.year)"
+                      [pTooltip]="grp.tooltip"
                       tooltipPosition="top"
                     ></div>
                   }
                 } @else {
-                  @for (evt of row.events; track $index) {
-                    @if (evt.type === 'birth' || evt.type === 'death' || evt.type === 'child-born') {
-                      <div
-                        class="event-dot event-dot--{{ evt.type }}"
-                        [style.left.px]="dateToLeft(evt.date)"
-                        [pTooltip]="evt.tooltip"
-                        tooltipPosition="top"
-                      ></div>
-                    }
+                  @for (grp of row.groupedBirthDeathEvents; track grp.year) {
+                    <div
+                      [class]="'event-dot ' + grp.cssClass"
+                      [style.left.px]="yearToLeft(grp.year)"
+                      [pTooltip]="grp.tooltip"
+                      tooltipPosition="top"
+                    ></div>
                   }
                 }
               }

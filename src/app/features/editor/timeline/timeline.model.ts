@@ -17,6 +17,13 @@ export interface TimelineEvent {
   tooltip: string;
 }
 
+export interface TimelineEventGroup {
+  year: number;
+  events: TimelineEvent[];
+  tooltip: string;
+  cssClass: string;
+}
+
 export interface TimelineRelationRow {
   relation: Relation;
   partnerName: string;
@@ -40,6 +47,8 @@ export interface TimelinePersonRow {
   birthDate: Date | null;
   deathDate: Date | null;
   events: TimelineEvent[];
+  groupedEvents: TimelineEventGroup[];
+  groupedBirthDeathEvents: TimelineEventGroup[];
   relationships: TimelineRelationRow[];
   residences: TimelineResidenceRow[];
 }
