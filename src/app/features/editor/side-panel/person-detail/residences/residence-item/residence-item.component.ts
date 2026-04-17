@@ -1,14 +1,17 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { Menu, MenuModule } from 'primeng/menu';
-import { Residence } from '../../../../../shared/residences/residence.model';
+import { TooltipModule } from 'primeng/tooltip';
+import { FuzzyDatePipe } from '../../../../../../shared/persons/fuzzy-date.pipe';
+import { Residence } from '../../../../../../shared/residences/residence.model';
+import { ResidencesStore } from '../../../../../../shared/residences/residences.store';
 
 @Component({
   selector: 'app-residence-item',
   standalone: true,
-  imports: [ButtonModule, MenuModule, ConfirmPopupModule],
+  imports: [ButtonModule, MenuModule, ConfirmPopupModule, TooltipModule, FuzzyDatePipe],
   templateUrl: './residence-item.component.html',
   styleUrl: './residence-item.component.scss',
   host: { '[class.highlighted]': 'highlighted()' },
@@ -20,6 +23,11 @@ export class ResidenceItemComponent {
   readonly deleteConfirmed = output<void>();
 
   private readonly confirmationService = inject(ConfirmationService);
+  private readonly residencesStore = inject(ResidencesStore);
+
+  readonly movedToResidence = computed(() =>
+    this.residencesStore.residences().find(r => r.id === this.residence().movedToResidenceId),
+  );
 
   menuItems: MenuItem[] = [];
   private confirmAnchor: HTMLElement | null = null;

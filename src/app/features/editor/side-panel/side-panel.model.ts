@@ -6,8 +6,7 @@ export type PanelAction =
   | { type: 'person-form' }
   | { type: 'person-edit'; personId: string }
   | { type: 'relation-form' }
-  | { type: 'relation-detail'; relationId: string }
-  | { type: 'relation-edit'; relationId: string }
+  | { type: 'relation-edit'; relationId: string; personId?: string }
   | { type: 'residence-form'; personId: string }
   | { type: 'residence-edit'; residenceId: string; personId: string }
   | { type: 'residence-location'; locations: ResidenceLocationEntry[] };

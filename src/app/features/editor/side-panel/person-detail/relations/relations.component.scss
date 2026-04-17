@@ -1,0 +1,19 @@
+:host {
+  display: block;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--p-surface-200);
+}
+
+.relations-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.relations-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin: 0;
+}

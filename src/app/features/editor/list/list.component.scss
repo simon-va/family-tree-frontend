@@ -4,28 +4,3 @@
   flex: 1;
   min-height: 0;
 }
-
-::ng-deep {
-  .p-tabs {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
-  }
-
-  .p-tabpanels {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
-  }
-
-  .p-tabpanel:not([hidden]) {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
-  }
-}
