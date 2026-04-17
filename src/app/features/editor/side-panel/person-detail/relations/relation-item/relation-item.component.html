@@ -10,7 +10,24 @@
   </ng-template>
 </p-confirmpopup>
 <p-menu #menu [model]="menuItems" [popup]="true" appendTo="body" />
-<span class="relation-label">{{ label() }}</span>
+<ng-template #relationTooltip>
+  <strong class="dot-tooltip__year">{{ label() }}</strong>
+  <hr class="dot-tooltip__divider" />
+  <div class="dot-tooltip__event">Beginn: {{ relation().startDate | fuzzyDate }}</div>
+  <div class="dot-tooltip__event">Ende: {{ relation().endDate | fuzzyDate }}</div>
+  @if (relation().endReason) {
+    <div class="dot-tooltip__event">Grund: {{ relation().endReason }}</div>
+  }
+  @if (relation().notes) {
+    <div class="dot-tooltip__event">{{ relation().notes }}</div>
+  }
+</ng-template>
+<span
+  class="relation-label"
+  [pTooltip]="relationTooltip"
+  tooltipPosition="top"
+  tooltipStyleClass="dot-tooltip"
+>{{ label() }}</span>
 <span #confirmAnchor class="confirm-anchor">
   <p-button icon="pi pi-ellipsis-v" [text]="true" size="small" severity="secondary" (onClick)="openMenu(menu, $event, confirmAnchor)" />
 </span>

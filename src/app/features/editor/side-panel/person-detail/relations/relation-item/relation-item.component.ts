@@ -3,14 +3,16 @@ import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { Menu, MenuModule } from 'primeng/menu';
+import { TooltipModule } from 'primeng/tooltip';
+import { FuzzyDatePipe } from '../../../../../../shared/persons/fuzzy-date.pipe';
 import { PersonsStore } from '../../../../../../shared/persons/persons.store';
-import { PARENT_TYPES, RELATION_TYPE_LABELS } from '../../../../../../shared/relations/relation-type.pipe';
 import { Relation } from '../../../../../../shared/relations/relation.model';
+import { PARENT_TYPES, RELATION_TYPE_LABELS, RelationTypePipe } from '../../../../../../shared/relations/relation-type.pipe';
 
 @Component({
   selector: 'app-relation-item',
   standalone: true,
-  imports: [ButtonModule, MenuModule, ConfirmPopupModule],
+  imports: [ButtonModule, MenuModule, ConfirmPopupModule, TooltipModule, FuzzyDatePipe],
   templateUrl: './relation-item.component.html',
   styleUrl: './relation-item.component.scss',
 })
