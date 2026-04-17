@@ -3,7 +3,7 @@ import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { Menu, MenuModule } from 'primeng/menu';
-import { Residence } from '../../../../../shared/residences/residence.model';
+import { Residence } from '../../../../../../shared/residences/residence.model';
 
 @Component({
   selector: 'app-residence-item',

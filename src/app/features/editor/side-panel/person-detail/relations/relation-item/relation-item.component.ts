@@ -3,9 +3,9 @@ import { ConfirmationService, MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { Menu, MenuModule } from 'primeng/menu';
-import { PersonsStore } from '../../../../../shared/persons/persons.store';
-import { PARENT_TYPES, RELATION_TYPE_LABELS } from '../../../../../shared/relations/relation-type.pipe';
-import { Relation } from '../../../../../shared/relations/relation.model';
+import { PersonsStore } from '../../../../../../shared/persons/persons.store';
+import { PARENT_TYPES, RELATION_TYPE_LABELS } from '../../../../../../shared/relations/relation-type.pipe';
+import { Relation } from '../../../../../../shared/relations/relation.model';
 
 @Component({
   selector: 'app-relation-item',

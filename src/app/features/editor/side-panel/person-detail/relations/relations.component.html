@@ -1,0 +1,7 @@
+<div class="relations-header">
+  <p class="relations-label">Beziehungen</p>
+  <p-button icon="pi pi-plus" [text]="true" size="small" severity="secondary" (onClick)="openRelationForm()" />
+</div>
+@for (relation of personRelations(); track relation.id) {
+  <app-relation-item [relation]="relation" [personId]="personId()" (viewRelation)="onViewRelation(relation.id)" (deleteConfirmed)="onDeleteRelation(relation.id)" />
+}
