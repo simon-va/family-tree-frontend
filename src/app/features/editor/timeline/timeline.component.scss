@@ -29,6 +29,8 @@ $grid-color: var(--p-surface-200);
 .timeline-canvas {
   position: relative;
   min-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .timeline-header {
@@ -54,6 +56,11 @@ $grid-color: var(--p-surface-200);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  background: var(--p-surface-0);
+  border-right: 1px solid $grid-color;
 
   &--header {
     font-weight: 600;
@@ -82,6 +89,16 @@ $grid-color: var(--p-surface-200);
   font-weight: 600;
   color: var(--p-surface-400);
   user-select: none;
+}
+
+.timeline-label-filler {
+  flex: 1;
+  width: $label-width;
+  min-width: $label-width;
+  position: sticky;
+  left: 0;
+  background: var(--p-surface-0);
+  border-right: 1px solid $grid-color;
 }
 
 .timeline-grid {
@@ -121,6 +138,10 @@ $grid-color: var(--p-surface-200);
   &--expanded {
     background: var(--p-surface-50);
 
+    .timeline-label-col {
+      background: var(--p-surface-50);
+    }
+
     .person-label {
       font-weight: 600;
     }
@@ -130,6 +151,10 @@ $grid-color: var(--p-surface-200);
     .person-row,
     .sub-row {
       background-color: var(--p-primary-50);
+
+      .timeline-label-col {
+        background-color: var(--p-primary-50);
+      }
     }
 
     .person-label {
@@ -152,6 +177,10 @@ $grid-color: var(--p-surface-200);
 
   &:hover {
     background: var(--p-surface-100);
+
+    .timeline-label-col {
+      background: var(--p-surface-100);
+    }
   }
 }
 
