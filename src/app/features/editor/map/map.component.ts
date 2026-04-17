@@ -46,8 +46,10 @@ export class MapComponent {
 
     effect(() => {
       const residences = this.residencesStore.residences();
+      const action = this.sidePanelService.action();
       if (!this.map) return;
-      this.renderMarkers(residences);
+      const selectedPersonId = action.type === 'person-detail' ? action.personId : null;
+      this.renderMarkers(residences, selectedPersonId);
     });
   }
 
@@ -77,11 +79,23 @@ export class MapComponent {
     });
 
     const renderer: Renderer = {
-      render: ({ position }) =>
-        new google.maps.marker.AdvancedMarkerElement({
+      render: ({ position, markers }) => {
+        const action = this.sidePanelService.action();
+        const selectedPersonId = action.type === 'person-detail' ? action.personId : null;
+        const isHighlighted =
+          selectedPersonId != null &&
+          (markers as AdvancedMarker[]).some((m) =>
+            this.markerData.get(m)?.residences.some((r) => r.personId === selectedPersonId),
+          );
+        return new google.maps.marker.AdvancedMarkerElement({
           position,
-          content: this.createMarkerContent(this.cssVar('--p-blue-500', '#3b82f6')),
-        }),
+          content: this.createMarkerContent(
+            isHighlighted
+              ? this.cssVar('--p-green-500', '#22c55e')
+              : this.cssVar('--p-blue-500', '#3b82f6'),
+          ),
+        });
+      },
     };
 
     this.clusterer = new ExposedMarkerClusterer({
@@ -110,7 +124,7 @@ export class MapComponent {
     return [...grouped.values()];
   }
 
-  private renderMarkers(residences: Residence[]): void {
+  private renderMarkers(residences: Residence[], selectedPersonId: string | null = null): void {
     if (!this.clusterer || !this.map) return;
     this.clusterer.clearMarkers();
     this.markerData = new WeakMap();
@@ -120,9 +134,14 @@ export class MapComponent {
     const markers: AdvancedMarker[] = [];
 
     for (const group of groups) {
+      const isHighlighted =
+        selectedPersonId != null && group.residences.some((r) => r.personId === selectedPersonId);
+      const color = isHighlighted
+        ? this.cssVar('--p-green-500', '#22c55e')
+        : this.cssVar('--p-blue-500', '#3b82f6');
       const marker = new google.maps.marker.AdvancedMarkerElement({
         position: { lat: group.lat, lng: group.lng },
-        content: this.createMarkerContent(this.cssVar('--p-green-500', '#22c55e')),
+        content: this.createMarkerContent(color),
       });
 
       this.markerData.set(marker, group);
