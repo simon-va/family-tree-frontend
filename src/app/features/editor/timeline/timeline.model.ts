@@ -11,8 +11,11 @@ export type TimelineEventType =
   | 'residence-start'
   | 'residence-end';
 
+export type TimelineEventCategory = 'birth' | 'death' | 'child-born' | 'relationship' | 'residence';
+
 export interface TimelineEvent {
   type: TimelineEventType;
+  category: TimelineEventCategory;
   date: Date;
   tooltip: string;
 }

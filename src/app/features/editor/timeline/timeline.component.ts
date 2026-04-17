@@ -109,14 +109,14 @@ export class TimelineComponent {
         if (birthDate) {
           const parts = [this.formatFuzzy(person.birthDate)];
           if (person.birthPlace) parts.push(person.birthPlace);
-          events.push({ type: 'birth', date: birthDate, tooltip: `Geburt: ${parts.join(', ')}` });
+          events.push({ type: 'birth', category: 'birth', date: birthDate, tooltip: `Geburt: ${parts.join(', ')}` });
         }
 
         // Death event
         if (deathDate) {
           const parts = [this.formatFuzzy(person.deathDate)];
           if (person.deathPlace) parts.push(person.deathPlace);
-          events.push({ type: 'death', date: deathDate, tooltip: `Tod: ${parts.join(', ')}` });
+          events.push({ type: 'death', category: 'death', date: deathDate, tooltip: `Tod: ${parts.join(', ')}` });
         }
 
         // Child-born events (person is parent)
@@ -133,6 +133,7 @@ export class TimelineComponent {
             if (d) {
               events.push({
                 type: 'child-born',
+                category: 'child-born',
                 date: d,
                 tooltip: `Kind geboren: ${child.firstName} ${child.lastName}, ${this.formatFuzzy(child.birthDate)}`,
               });
@@ -159,6 +160,7 @@ export class TimelineComponent {
             if (d) {
               events.push({
                 type: 'relationship-start',
+                category: 'relationship',
                 date: d,
                 tooltip: `${typeLabel}: ${partnerName}, ${this.formatFuzzy(rel.startDate)}`,
               });
@@ -169,7 +171,7 @@ export class TimelineComponent {
             if (d) {
               const parts = [`${typeLabel} Ende: ${partnerName}, ${this.formatFuzzy(rel.endDate)}`];
               if (rel.endReason) parts.push(rel.endReason);
-              events.push({ type: 'relationship-end', date: d, tooltip: parts.join(' – ') });
+              events.push({ type: 'relationship-end', category: 'relationship', date: d, tooltip: parts.join(' – ') });
             }
           }
 
@@ -204,6 +206,7 @@ export class TimelineComponent {
             if (d) {
               events.push({
                 type: 'residence-start',
+                category: 'residence',
                 date: d,
                 tooltip: `Wohnort: ${address}, ${this.formatFuzzy(res.startDate)}`,
               });
@@ -214,6 +217,7 @@ export class TimelineComponent {
             if (d) {
               events.push({
                 type: 'residence-end',
+                category: 'residence',
                 date: d,
                 tooltip: `Wohnort Ende: ${address}, ${this.formatFuzzy(res.endDate)}`,
               });
@@ -310,11 +314,12 @@ export class TimelineComponent {
       .sort(([a], [b]) => a - b)
       .map(([year, evts]) => {
         let cssClass: string;
-        if (evts.length === 1) {
-          cssClass = `event-dot--${evts[0].type}`;
-        } else if (evts.some((e) => e.type === 'birth')) {
+        const uniqueCategories = new Set(evts.map((e) => e.category));
+        if (uniqueCategories.size === 1) {
+          cssClass = `event-dot--${evts[0].category}`;
+        } else if (evts.some((e) => e.category === 'birth')) {
           cssClass = 'event-dot--birth';
-        } else if (evts.some((e) => e.type === 'death')) {
+        } else if (evts.some((e) => e.category === 'death')) {
           cssClass = 'event-dot--death';
         } else {
           cssClass = 'event-dot--multi';

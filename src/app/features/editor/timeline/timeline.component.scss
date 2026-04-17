@@ -199,12 +199,14 @@ $grid-color: #e2e8f0;
   }
 
   &--relationship-start,
-  &--relationship-end {
+  &--relationship-end,
+  &--relationship {
     background: $rel-spouse;
   }
 
   &--residence-start,
-  &--residence-end {
+  &--residence-end,
+  &--residence {
     background: $residence;
   }
 
