@@ -259,6 +259,30 @@ $grid-color: #e2e8f0;
   text-overflow: ellipsis;
 }
 
+::ng-deep {
+  .dot-tooltip {
+    max-width: none !important;
+  }
+
+  .dot-tooltip__year {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+
+  .dot-tooltip__divider {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    margin: 4px 0;
+  }
+
+  .dot-tooltip__event {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+}
+
 .sub-bar {
   position: absolute;
   top: 50%;
