@@ -1,0 +1,116 @@
+<div class="timeline-container">
+  <div class="timeline-scroll">
+    <div class="timeline-canvas" [style.width.px]="timeScale().totalWidth + labelColWidth">
+
+      <div class="timeline-header">
+        <div class="timeline-label-col timeline-label-col--header">Person</div>
+        <div class="timeline-track timeline-track--header">
+          @for (decade of timeScale().decades; track decade) {
+            <span class="decade-label" [style.left.px]="decadeLeft(decade)">{{ decade }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="timeline-grid">
+        <div class="timeline-grid__spacer"></div>
+        <div class="timeline-grid__lines">
+          @for (decade of timeScale().decades; track decade) {
+            <div class="grid-line" [style.left.px]="decadeLeft(decade)"></div>
+          }
+        </div>
+      </div>
+
+      @for (row of rows(); track row.person.id) {
+        <div class="person-block" [class.person-block--expanded]="isExpanded(row.person.id)" [class.person-block--selected]="selectedPersonId() === row.person.id">
+          <div class="person-row" [class.person-row--expandable]="row.relationships.length > 0 || row.residences.length > 0" (click)="toggle(row.person.id)">
+            <div class="timeline-label-col person-label">
+              <span class="person-label__name">
+                @if (row.relationships.length > 0 || row.residences.length > 0) {
+                  <i [class]="isExpanded(row.person.id) ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
+                }
+                {{ row.person.firstName }} {{ row.person.lastName }}
+              </span>
+              <i class="pi pi-info-circle person-label__info" (click)="openPersonDetail($event, row.person.id)"></i>
+            </div>
+            <div class="timeline-track">
+              @if (row.birthDate) {
+                <div
+                  class="life-bar"
+                  [style.left.px]="dateToLeft(row.birthDate)"
+                  [style.width.px]="barWidth(row.birthDate, row.deathDate)"
+                  [pTooltip]="row.person.firstName + ' ' + row.person.lastName"
+                  tooltipPosition="top"
+                ></div>
+
+                @if (!isExpanded(row.person.id)) {
+                  @for (grp of row.groupedEvents; track grp.year) {
+                    <app-timeline-event-dot [group]="grp" [leftPx]="yearToLeft(grp.year)" />
+                  }
+                } @else {
+                  @for (grp of row.groupedBirthDeathEvents; track grp.year) {
+                    <app-timeline-event-dot [group]="grp" [leftPx]="yearToLeft(grp.year)" />
+                  }
+                }
+              }
+            </div>
+          </div>
+
+          <div class="sub-rows" [class.sub-rows--open]="isExpanded(row.person.id)">
+            <div class="sub-rows__inner">
+              @for (rel of row.relationships; track rel.relation.id) {
+                <ng-template #relBarTooltip>
+                  <strong class="dot-tooltip__year">{{ rel.typeLabel }} {{ rel.partnerName }}</strong>
+                  <hr class="dot-tooltip__divider" />
+                  <div class="dot-tooltip__event">Beginn: {{ rel.relation.startDate | fuzzyDate }}</div>
+                  <div class="dot-tooltip__event">Ende: {{ rel.relation.endDate | fuzzyDate }}</div>
+                </ng-template>
+                <div class="sub-row">
+                  <div class="timeline-label-col sub-label">
+                    <i class="pi pi-users sub-label__icon"></i>
+                    <span class="sub-label__type">{{ rel.typeLabel }}</span>
+                    <span class="sub-label__name">{{ rel.partnerName }}</span>
+                  </div>
+                  <div class="timeline-track">
+                    <div
+                      class="sub-bar sub-bar--relation sub-bar--{{ rel.relationType }}"
+                      [style.left.px]="dateToLeft(rel.startDate)"
+                      [style.width.px]="barWidth(rel.startDate, rel.endDate)"
+                      [pTooltip]="relBarTooltip"
+                      tooltipPosition="top"
+                      tooltipStyleClass="dot-tooltip"
+                    ></div>
+                  </div>
+                </div>
+              }
+
+              @for (res of row.residences; track res.residence.id) {
+                <ng-template #resBarTooltip>
+                  <strong class="dot-tooltip__year">{{ res.address }}</strong>
+                  <hr class="dot-tooltip__divider" />
+                  <div class="dot-tooltip__event">Beginn: {{ res.residence.startDate | fuzzyDate }}</div>
+                  <div class="dot-tooltip__event">Ende: {{ res.residence.endDate | fuzzyDate }}</div>
+                </ng-template>
+                <div class="sub-row">
+                  <div class="timeline-label-col sub-label">
+                    <i class="pi pi-home sub-label__icon"></i>
+                    <span class="sub-label__name">{{ res.address }}</span>
+                  </div>
+                  <div class="timeline-track">
+                    <div
+                      class="sub-bar sub-bar--residence"
+                      [style.left.px]="dateToLeft(res.startDate)"
+                      [style.width.px]="barWidth(res.startDate, res.endDate)"
+                      [pTooltip]="resBarTooltip"
+                      tooltipPosition="top"
+                      tooltipStyleClass="dot-tooltip"
+                    ></div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

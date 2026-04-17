@@ -1,0 +1,289 @@
+$label-width: 200px;
+$row-height: 36px;
+$sub-row-height: 28px;
+$bar-height: 10px;
+$sub-bar-height: 8px;
+$dot-size: 10px;
+$grid-color: var(--p-surface-200);
+
+:host {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.timeline-container {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.timeline-scroll {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+}
+
+.timeline-canvas {
+  position: relative;
+  min-height: 100%;
+}
+
+.timeline-header {
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--p-surface-0);
+  border-bottom: 2px solid $grid-color;
+  height: $row-height;
+  align-items: center;
+}
+
+.timeline-label-col {
+  width: $label-width;
+  min-width: $label-width;
+  flex-shrink: 0;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  padding: 0 12px;
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &--header {
+    font-weight: 600;
+    color: var(--p-surface-500);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+.timeline-track {
+  flex: 1;
+  position: relative;
+  height: 100%;
+
+  &--header {
+    position: relative;
+  }
+}
+
+.decade-label {
+  position: absolute;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--p-surface-400);
+  user-select: none;
+}
+
+.timeline-grid {
+  display: flex;
+  position: absolute;
+  top: $row-height;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.timeline-grid__spacer {
+  width: $label-width;
+  min-width: $label-width;
+  flex-shrink: 0;
+}
+
+.timeline-grid__lines {
+  flex: 1;
+  position: relative;
+}
+
+.grid-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: $grid-color;
+  opacity: 0.6;
+}
+
+.person-block {
+  border-bottom: 1px solid var(--p-surface-100);
+
+  &--expanded {
+    background: var(--p-surface-50);
+
+    .person-label {
+      font-weight: 600;
+    }
+  }
+
+  &--selected {
+    .person-row,
+    .sub-row {
+      background-color: var(--p-primary-50);
+    }
+
+    .person-label {
+      font-weight: 600;
+    }
+  }
+}
+
+.person-row {
+  display: flex;
+  height: $row-height;
+  align-items: center;
+  cursor: default;
+  position: relative;
+  z-index: 1;
+
+  &--expandable {
+    cursor: pointer;
+  }
+
+  &:hover {
+    background: var(--p-surface-100);
+  }
+}
+
+.person-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+
+  .pi {
+    font-size: 0.75rem;
+    color: var(--p-surface-400);
+  }
+}
+
+.person-label__name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.person-label__info {
+  cursor: pointer;
+}
+
+.life-bar {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: $bar-height;
+  background: var(--p-gray-500);
+  border-radius: calc($bar-height / 2);
+  opacity: 0.7;
+  cursor: default;
+}
+
+.sub-rows {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.25s ease;
+  position: relative;
+  z-index: 1;
+
+  &--open {
+    grid-template-rows: 1fr;
+  }
+}
+
+.sub-rows__inner {
+  min-height: 0;
+  overflow: clip;
+}
+
+.sub-row {
+  display: flex;
+  height: $sub-row-height;
+  align-items: center;
+  position: relative;
+}
+
+.sub-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-left: 28px;
+  font-size: 0.75rem;
+  color: var(--p-surface-500);
+}
+
+.sub-label__type {
+  font-weight: 500;
+}
+
+.sub-label__icon {
+  font-size: 0.75rem;
+}
+
+.sub-label__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+::ng-deep {
+  .dot-tooltip {
+    max-width: none !important;
+  }
+
+  .dot-tooltip__year {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+
+  .dot-tooltip__divider {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    margin: 4px 0;
+  }
+
+  .dot-tooltip__event {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+}
+
+.sub-bar {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: $sub-bar-height;
+  border-radius: calc($sub-bar-height / 2);
+  opacity: 0.8;
+  cursor: default;
+
+  &--spouse {
+    background: var(--p-purple-500);
+  }
+
+  &--partner {
+    background: var(--p-purple-500);
+  }
+
+  &--engaged {
+    background: var(--p-purple-500);
+  }
+
+  &--residence {
+    background: var(--p-blue-500);
+  }
+}
