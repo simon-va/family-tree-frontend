@@ -38,15 +38,8 @@
       </div>
     }
 
-    <div class="side-panel__residences">
-      <div class="side-panel__residences-header">
-        <p class="side-panel__residences-label">Wohnorte</p>
-        <p-button icon="pi pi-plus" [text]="true" size="small" severity="secondary" (onClick)="openResidenceForm()" />
-      </div>
-      @for (residence of personResidences(); track residence.id) {
-        <app-residence-item [residence]="residence" [highlighted]="highlightedResidenceId() === residence.id" (edit)="onEditResidence(residence.id)" (deleteConfirmed)="onDeleteResidence(residence.id)" />
-      }
-    </div>
+    <app-person-residences [personId]="person().id" />
+    <app-person-relations [personId]="person().id" />
   </div>
 
   <div class="last-action">
@@ -68,4 +61,3 @@
     }
   </div>
 </div>
-

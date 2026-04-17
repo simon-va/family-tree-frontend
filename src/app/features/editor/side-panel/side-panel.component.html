@@ -17,9 +17,6 @@
         @case ('relation-form') {
           Neue Beziehung erstellen
         }
-        @case ('relation-detail') {
-          Informationen zu Beziehung
-        }
         @case ('relation-edit') {
           Beziehung bearbeiten
         }
@@ -58,11 +55,8 @@
   @if (service.action().type === 'relation-form') {
     <app-relation-form />
   }
-  @if (relation(); as r) {
-    <app-relation-detail [relation]="r" />
-  }
-  @if (editRelationId(); as id) {
-    <app-relation-form [relationId]="id" />
+  @if (editRelation(); as er) {
+    <app-relation-form [relationId]="er.relationId" [personId]="er.personId ?? null" />
   }
   @if (residenceFormPersonId(); as id) {
     <app-residence-form [personId]="id" />

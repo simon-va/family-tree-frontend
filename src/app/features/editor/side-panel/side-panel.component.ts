@@ -1,10 +1,8 @@
 import { Component, computed, HostListener, inject, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { PersonsStore } from '../../../shared/persons/persons.store';
-import { RelationsStore } from '../../../shared/relations/relations.store';
 import { PersonDetailComponent } from './person-detail/person-detail.component';
 import { PersonFormComponent } from './person-form/person-form.component';
-import { RelationDetailComponent } from './relation-detail/relation-detail.component';
 import { RelationFormComponent } from './relation-form/relation-form.component';
 import { ResidenceFormComponent } from './residence-form/residence-form.component';
 import { ResidenceLocationComponent } from './residence-location/residence-location.component';
@@ -13,14 +11,13 @@ import { SidePanelService } from './side-panel.service';
 @Component({
   selector: 'app-side-panel',
   standalone: true,
-  imports: [ButtonModule, PersonDetailComponent, PersonFormComponent, RelationFormComponent, RelationDetailComponent, ResidenceFormComponent, ResidenceLocationComponent],
+  imports: [ButtonModule, PersonDetailComponent, PersonFormComponent, RelationFormComponent, ResidenceFormComponent, ResidenceLocationComponent],
   templateUrl: './side-panel.component.html',
   styleUrl: './side-panel.component.scss',
 })
 export class SidePanelComponent {
   readonly service = inject(SidePanelService);
   private readonly store = inject(PersonsStore);
-  private readonly relationsStore = inject(RelationsStore);
 
   readonly person = computed(() => {
     const action = this.service.action();
@@ -33,15 +30,9 @@ export class SidePanelComponent {
     return action.type === 'person-edit' ? action.personId : null;
   });
 
-  readonly relation = computed(() => {
+  readonly editRelation = computed(() => {
     const action = this.service.action();
-    if (action.type !== 'relation-detail') return null;
-    return this.relationsStore.relations().find((r) => r.id === action.relationId) ?? null;
-  });
-
-  readonly editRelationId = computed(() => {
-    const action = this.service.action();
-    return action.type === 'relation-edit' ? action.relationId : null;
+    return action.type === 'relation-edit' ? { relationId: action.relationId, personId: action.personId } : null;
   });
 
   readonly residenceFormPersonId = computed(() => {

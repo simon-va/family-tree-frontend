@@ -1,0 +1,7 @@
+<div class="residences-header">
+  <p class="residences-label">Wohnorte</p>
+  <p-button icon="pi pi-plus" [text]="true" size="small" severity="secondary" (onClick)="openResidenceForm()" />
+</div>
+@for (residence of personResidences(); track residence.id) {
+  <app-residence-item [residence]="residence" [highlighted]="highlightedResidenceId() === residence.id" (edit)="onEditResidence(residence.id)" (deleteConfirmed)="onDeleteResidence(residence.id)" />
+}
