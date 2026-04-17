@@ -188,10 +188,10 @@ export class TimelineComponent {
     }
 
     const childRelations = relations.filter(
-      (r) => PARENT_TYPES.includes(r.type) && (r.personAId === person.id || r.personBId === person.id),
+      (r) => PARENT_TYPES.includes(r.type) && r.personAId === person.id,
     );
     for (const rel of childRelations) {
-      const childId = rel.personAId === person.id ? rel.personBId : rel.personAId;
+      const childId = rel.personBId;
       const child = personMap.get(childId);
       if (child?.birthDate) {
         const d = this.toDate(child.birthDate);
