@@ -10,7 +10,25 @@
   </ng-template>
 </p-confirmpopup>
 <p-menu #menu [model]="menuItems" [popup]="true" appendTo="body" />
-<span class="residence-address">{{ formatAddress() }}</span>
+<ng-template #residenceTooltip>
+  <strong class="dot-tooltip__year">{{ residence().street }}</strong>
+  <hr class="dot-tooltip__divider" />
+  <div class="dot-tooltip__event">Beginn: {{ residence().startDate | fuzzyDate }}</div>
+  <div class="dot-tooltip__event">Ende: {{ residence().endDate | fuzzyDate }}</div>
+  @if (residence().notes) {
+    <div class="dot-tooltip__event">{{ residence().notes }}</div>
+  }
+  @if (movedToResidence()) {
+    <hr class="dot-tooltip__divider" />
+    <div class="dot-tooltip__event">Umzug nach: {{ movedToResidence()!.street }}</div>
+  }
+</ng-template>
+<span
+  class="residence-address"
+  [pTooltip]="residenceTooltip"
+  tooltipPosition="top"
+  tooltipStyleClass="dot-tooltip"
+>{{ formatAddress() }}</span>
 <span #confirmAnchor class="confirm-anchor">
   <p-button icon="pi pi-ellipsis-v" [text]="true" size="small" severity="secondary" (onClick)="openMenu(menu, $event, confirmAnchor)" />
 </span>
