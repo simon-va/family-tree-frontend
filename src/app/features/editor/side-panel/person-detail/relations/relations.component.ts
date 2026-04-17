@@ -27,8 +27,8 @@ export class PersonRelationsComponent {
     this.sidePanelService.open({ type: 'relation-form' });
   }
 
-  onViewRelation(relationId: string): void {
-    this.sidePanelService.open({ type: 'relation-detail', relationId });
+  onEditRelation(relationId: string): void {
+    this.sidePanelService.open({ type: 'relation-edit', relationId, personId: this.personId() });
   }
 
   onDeleteRelation(relationId: string): void {

@@ -17,7 +17,7 @@ import { Relation } from '../../../../../../shared/relations/relation.model';
 export class RelationItemComponent {
   readonly relation = input.required<Relation>();
   readonly personId = input.required<string>();
-  readonly viewRelation = output<void>();
+  readonly editRelation = output<void>();
   readonly deleteConfirmed = output<void>();
 
   private readonly personsStore = inject(PersonsStore);
@@ -52,9 +52,9 @@ export class RelationItemComponent {
     this.confirmAnchor = anchor;
     this.menuItems = [
       {
-        label: 'Öffnen',
-        icon: 'pi pi-arrow-right',
-        command: () => this.viewRelation.emit(),
+        label: 'Bearbeiten',
+        icon: 'pi pi-pencil',
+        command: () => this.editRelation.emit(),
       },
       {
         label: 'Löschen',

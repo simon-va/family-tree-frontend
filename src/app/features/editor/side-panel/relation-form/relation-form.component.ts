@@ -33,6 +33,7 @@ export class RelationFormComponent implements OnInit {
   private readonly sidePanelService = inject(SidePanelService);
 
   readonly relationId = input<string | null>(null);
+  readonly personId = input<string | null>(null);
 
   readonly saving = signal(false);
 
@@ -168,14 +169,19 @@ export class RelationFormComponent implements OnInit {
       : this.relationsStore.create(input);
 
     op$.pipe(finalize(() => this.saving.set(false))).subscribe({
-      next: (relation) => this.sidePanelService.open({ type: 'relation-detail', relationId: relation.id }),
+      next: () => this.sidePanelService.close(),
     });
   }
 
   onCancel(): void {
     const id = this.relationId();
     if (id) {
-      this.sidePanelService.open({ type: 'relation-detail', relationId: id });
+      const pid = this.personId();
+      if (pid) {
+        this.sidePanelService.open({ type: 'person-detail', personId: pid });
+      } else {
+        this.sidePanelService.close();
+      }
     } else {
       this.sidePanelService.close();
     }
