@@ -5,8 +5,10 @@
       <div class="timeline-header">
         <div class="timeline-label-col timeline-label-col--header">Person</div>
         <div class="timeline-track timeline-track--header">
-          @for (decade of timeScale().decades; track decade) {
-            <span class="decade-label" [style.left.px]="decadeLeft(decade)">{{ decade }}</span>
+          @for (decade of timeScale().decades; track decade; let i = $index) {
+            @if (i > 0) {
+              <span class="decade-label" [style.left.px]="decadeLeft(decade)">{{ decade }}</span>
+            }
           }
         </div>
       </div>
