@@ -166,6 +166,10 @@ $grid-color: var(--p-surface-200);
   min-width: 0;
 }
 
+.person-label__info {
+  cursor: pointer;
+}
+
 .life-bar {
   position: absolute;
   top: 50%;

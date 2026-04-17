@@ -30,14 +30,7 @@
                 }
                 {{ row.person.firstName }} {{ row.person.lastName }}
               </span>
-              <p-button
-                icon="pi pi-info-circle"
-                severity="secondary"
-                [rounded]="true"
-                [text]="true"
-                size="small"
-                (onClick)="openPersonDetail($event, row.person.id)"
-              />
+              <i class="pi pi-info-circle person-label__info" (click)="openPersonDetail($event, row.person.id)"></i>
             </div>
             <div class="timeline-track">
               @if (row.birthDate) {
@@ -73,6 +66,7 @@
                 </ng-template>
                 <div class="sub-row">
                   <div class="timeline-label-col sub-label">
+                    <i class="pi pi-users sub-label__icon"></i>
                     <span class="sub-label__type">{{ rel.typeLabel }}</span>
                     <span class="sub-label__name">{{ rel.partnerName }}</span>
                   </div>

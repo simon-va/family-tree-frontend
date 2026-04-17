@@ -1,5 +1,4 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { FuzzyDate, Person } from '../../../shared/persons/person.model';
 import { FuzzyDatePipe } from '../../../shared/persons/fuzzy-date.pipe';
@@ -27,7 +26,7 @@ const PARTNER_TYPES: RelationType[] = ['spouse', 'partner', 'engaged'];
 @Component({
   selector: 'app-timeline',
   standalone: true,
-  imports: [ButtonModule, TooltipModule, FuzzyDatePipe, TimelineEventDotComponent],
+  imports: [TooltipModule, FuzzyDatePipe, TimelineEventDotComponent],
   templateUrl: './timeline.component.html',
   styleUrl: './timeline.component.scss',
 })
