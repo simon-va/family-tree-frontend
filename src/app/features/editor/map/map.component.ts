@@ -50,6 +50,7 @@ export class MapComponent {
       if (!this.map) return;
       const selectedPersonId = action.type === 'person-detail' ? action.personId : null;
       this.renderMarkers(residences, selectedPersonId);
+      this.renderMoveLines();
     });
   }
 
@@ -198,6 +199,9 @@ export class MapComponent {
 
     const drawn = new Set<string>();
 
+    const action = this.sidePanelService.action();
+    const selectedPersonId = action.type === 'person-detail' ? action.personId : null;
+
     for (const edge of this.currentEdges) {
       const fromMarker = this.markerByResidenceId.get(edge.from.id);
       const toMarker = this.markerByResidenceId.get(edge.to.id);
@@ -214,17 +218,23 @@ export class MapComponent {
       if (drawn.has(dedupeKey)) continue;
       drawn.add(dedupeKey);
 
+      const isHighlighted =
+        selectedPersonId != null && edge.from.personId === selectedPersonId;
+      const lineColor = isHighlighted
+        ? this.cssVar('--p-green-500', '#22c55e')
+        : this.cssVar('--p-indigo-500', '#6366f1');
+
       const line = new google.maps.Polyline({
         path: [fromLatLng, toLatLng],
-        strokeColor: this.cssVar('--p-indigo-500', '#6366f1'),
+        strokeColor: lineColor,
         strokeWeight: 2,
         strokeOpacity: 0.6,
         icons: [
           {
             icon: {
               path: google.maps.SymbolPath.FORWARD_OPEN_ARROW,
-              strokeColor: this.cssVar('--p-indigo-500', '#6366f1'),
-              fillColor: this.cssVar('--p-indigo-500', '#6366f1'),
+              strokeColor: lineColor,
+              fillColor: lineColor,
               fillOpacity: 0.8,
               strokeWeight: 1,
               scale: 3,
