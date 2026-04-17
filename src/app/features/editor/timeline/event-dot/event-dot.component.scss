@@ -1,0 +1,41 @@
+$dot-size: 10px;
+
+.event-dot {
+  position: absolute;
+  top: 50%;
+  width: $dot-size;
+  height: $dot-size;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  cursor: default;
+  z-index: 1;
+  border: 2px solid #fff;
+
+  &--birth {
+    background: var(--p-green-500);
+  }
+
+  &--death {
+    background: var(--p-red-500);
+  }
+
+  &--child-born {
+    background: var(--p-yellow-500);
+  }
+
+  &--relationship-start,
+  &--relationship-end,
+  &--relationship {
+    background: var(--p-purple-500);
+  }
+
+  &--residence-start,
+  &--residence-end,
+  &--residence {
+    background: var(--p-blue-500);
+  }
+
+  &--multi {
+    background: var(--p-gray-400);
+  }
+}
