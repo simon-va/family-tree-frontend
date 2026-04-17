@@ -21,7 +21,7 @@
       </div>
 
       @for (row of rows(); track row.person.id) {
-        <div class="person-block" [class.person-block--expanded]="isExpanded(row.person.id)">
+        <div class="person-block" [class.person-block--expanded]="isExpanded(row.person.id)" [class.person-block--selected]="selectedPersonId() === row.person.id">
           <div class="person-row" [class.person-row--expandable]="row.relationships.length > 0 || row.residences.length > 0" (click)="toggle(row.person.id)">
             <div class="timeline-label-col person-label">
               <span class="person-label__name">

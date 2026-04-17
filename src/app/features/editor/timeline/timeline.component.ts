@@ -40,6 +40,12 @@ export class TimelineComponent {
   readonly expandedIds = signal<Set<string>>(new Set());
   readonly labelColWidth = LABEL_COL_WIDTH;
 
+  readonly selectedPersonId = computed(() => {
+    const action = this.sidePanelService.action();
+    return action.type === 'person-detail' || action.type === 'person-edit' || action.type === 'residence-form' || action.type === 'residence-edit'
+      ? action.personId : null;
+  });
+
   readonly timeScale = computed<TimeScale>(() => {
     const persons = this.personsStore.persons();
     const residences = this.residencesStore.residences();

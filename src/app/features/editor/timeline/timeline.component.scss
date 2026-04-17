@@ -125,6 +125,17 @@ $grid-color: var(--p-surface-200);
       font-weight: 600;
     }
   }
+
+  &--selected {
+    .person-row,
+    .sub-row {
+      background-color: var(--p-primary-50);
+    }
+
+    .person-label {
+      font-weight: 600;
+    }
+  }
 }
 
 .person-row {
