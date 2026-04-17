@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { Divider } from 'primeng/divider';
@@ -39,8 +39,22 @@ export class ResidenceFormComponent implements OnInit {
   readonly lng = signal<number | null>(null);
   readonly startDate = signal<FuzzyDateInput | null>(null);
   readonly endDate = signal<FuzzyDateInput | null>(null);
+  readonly movedToResidenceId = signal<string | null>(null);
 
-  private resolvedPersonId: string | null = null;
+  private readonly resolvedPersonId = signal<string | null>(null);
+
+  readonly personResidenceOptions = computed(() => {
+    const pid = this.resolvedPersonId();
+    const currentId = this.residenceId();
+    if (!pid) return [];
+    return this.residencesStore
+      .residences()
+      .filter((r) => r.personId === pid && r.id !== currentId)
+      .map((r) => ({
+        label: [r.street, r.city, r.country].filter(Boolean).join(', ') || r.id,
+        value: r.id,
+      }));
+  });
 
   readonly countryOptions = COUNTRY_OPTIONS;
 
@@ -61,7 +75,7 @@ export class ResidenceFormComponent implements OnInit {
     if (rid) {
       const r = this.residencesStore.residences().find((x) => x.id === rid);
       if (r) {
-        this.resolvedPersonId = r.personId;
+        this.resolvedPersonId.set(r.personId);
         this.street.set(r.street ?? '');
         this.city.set(r.city ?? '');
         this.country.set(r.country ?? '');
@@ -70,9 +84,10 @@ export class ResidenceFormComponent implements OnInit {
         this.lng.set(r.lng ?? null);
         this.startDate.set(r.startDate ? { precision: r.startDate.precision, date: r.startDate.date, dateTo: r.startDate.dateTo, note: r.startDate.note } : null);
         this.endDate.set(r.endDate ? { precision: r.endDate.precision, date: r.endDate.date, dateTo: r.endDate.dateTo, note: r.endDate.note } : null);
+        this.movedToResidenceId.set(r.movedToResidenceId ?? null);
       }
     } else {
-      this.resolvedPersonId = this.personId();
+      this.resolvedPersonId.set(this.personId());
     }
   }
 
@@ -80,9 +95,10 @@ export class ResidenceFormComponent implements OnInit {
     return this.city().trim().length > 0 || this.street().trim().length > 0 || this.country().trim().length > 0;
   }
 
+
   private buildInput() {
     return {
-      personId: this.resolvedPersonId!,
+      personId: this.resolvedPersonId()!,
       ...(this.street().trim() && { street: this.street().trim() }),
       ...(this.city().trim() && { city: this.city().trim() }),
       ...(this.country().trim() && { country: this.country().trim() }),
@@ -91,11 +107,12 @@ export class ResidenceFormComponent implements OnInit {
       ...(this.lng() != null && { lng: this.lng()! }),
       ...(this.startDate() && { startDate: this.startDate()! }),
       ...(this.endDate() && { endDate: this.endDate()! }),
+      ...(this.movedToResidenceId() && { movedToResidenceId: this.movedToResidenceId()! }),
     };
   }
 
   onSubmit(): void {
-    if (!this.isValid || !this.resolvedPersonId) return;
+    if (!this.isValid || !this.resolvedPersonId()) return;
 
     const rid = this.residenceId();
     this.saving.set(true);
@@ -105,13 +122,13 @@ export class ResidenceFormComponent implements OnInit {
       : this.residencesStore.create(this.buildInput());
 
     op$.pipe(finalize(() => this.saving.set(false))).subscribe({
-      next: () => this.sidePanelService.open({ type: 'person-detail', personId: this.resolvedPersonId! }),
+      next: () => this.sidePanelService.open({ type: 'person-detail', personId: this.resolvedPersonId()! }),
     });
   }
 
   onCancel(): void {
-    if (this.resolvedPersonId) {
-      this.sidePanelService.open({ type: 'person-detail', personId: this.resolvedPersonId });
+    if (this.resolvedPersonId()) {
+      this.sidePanelService.open({ type: 'person-detail', personId: this.resolvedPersonId()! });
     } else {
       this.sidePanelService.close();
     }

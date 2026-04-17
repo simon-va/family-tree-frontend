@@ -200,6 +200,7 @@ Erstellt einen neuen Wohnsitz.
   lng?: number;
   startDate?: FuzzyDateInput;
   endDate?: FuzzyDateInput;
+  movedToResidenceId?: string;
 }
 ```
 
@@ -232,6 +233,7 @@ Löscht einen Wohnsitz.
   lng?: number;
   startDate?: FuzzyDate;
   endDate?: FuzzyDate;
+  movedToResidenceId?: string;
 }
 ```
 
