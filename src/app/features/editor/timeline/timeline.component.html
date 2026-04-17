@@ -41,37 +41,11 @@
 
                 @if (!isExpanded(row.person.id)) {
                   @for (grp of row.groupedEvents; track grp.year) {
-                    <ng-template #dotTooltip>
-                      <strong class="dot-tooltip__year">{{ grp.year }}</strong>
-                      <hr class="dot-tooltip__divider" />
-                      @for (evt of grp.events; track $index) {
-                        <div class="dot-tooltip__event">{{ evt.tooltip }}</div>
-                      }
-                    </ng-template>
-                    <div
-                      [class]="'event-dot ' + grp.cssClass"
-                      [style.left.px]="yearToLeft(grp.year)"
-                      [pTooltip]="dotTooltip"
-                      tooltipPosition="top"
-                      tooltipStyleClass="dot-tooltip"
-                    ></div>
+                    <app-timeline-event-dot [group]="grp" [leftPx]="yearToLeft(grp.year)" />
                   }
                 } @else {
                   @for (grp of row.groupedBirthDeathEvents; track grp.year) {
-                    <ng-template #dotTooltip>
-                      <strong class="dot-tooltip__year">{{ grp.year }}</strong>
-                      <hr class="dot-tooltip__divider" />
-                      @for (evt of grp.events; track $index) {
-                        <div class="dot-tooltip__event">{{ evt.tooltip }}</div>
-                      }
-                    </ng-template>
-                    <div
-                      [class]="'event-dot ' + grp.cssClass"
-                      [style.left.px]="yearToLeft(grp.year)"
-                      [pTooltip]="dotTooltip"
-                      tooltipPosition="top"
-                      tooltipStyleClass="dot-tooltip"
-                    ></div>
+                    <app-timeline-event-dot [group]="grp" [leftPx]="yearToLeft(grp.year)" />
                   }
                 }
               }

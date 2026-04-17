@@ -3,10 +3,12 @@ import { TooltipModule } from 'primeng/tooltip';
 import { FuzzyDate, Person } from '../../../shared/persons/person.model';
 import { FuzzyDatePipe } from '../../../shared/persons/fuzzy-date.pipe';
 import { PersonsStore } from '../../../shared/persons/persons.store';
-import { RelationType } from '../../../shared/relations/relation.model';
+import { Relation, RelationType } from '../../../shared/relations/relation.model';
 import { PARENT_TYPES, RELATION_TYPE_LABELS } from '../../../shared/relations/relation-type.pipe';
 import { RelationsStore } from '../../../shared/relations/relations.store';
+import { Residence } from '../../../shared/residences/residence.model';
 import { ResidencesStore } from '../../../shared/residences/residences.store';
+import { TimelineEventDotComponent } from './event-dot/event-dot.component';
 import {
   TimelineEvent,
   TimelineEventGroup,
@@ -18,11 +20,12 @@ import {
 
 const PX_PER_YEAR = 14;
 const LABEL_COL_WIDTH = 200;
+const PARTNER_TYPES: RelationType[] = ['spouse', 'partner', 'engaged'];
 
 @Component({
   selector: 'app-timeline',
   standalone: true,
-  imports: [TooltipModule, FuzzyDatePipe],
+  imports: [TooltipModule, FuzzyDatePipe, TimelineEventDotComponent],
   templateUrl: './timeline.component.html',
   styleUrl: './timeline.component.scss',
 })
@@ -89,8 +92,6 @@ export class TimelineComponent {
     const residences = this.residencesStore.residences();
     const personMap = new Map<string, Person>(persons.map((p) => [p.id, p]));
 
-    const partnerTypes: RelationType[] = ['spouse', 'partner', 'engaged'];
-
     return [...persons]
       .sort((a, b) => {
         const da = a.birthDate?.date;
@@ -103,147 +104,10 @@ export class TimelineComponent {
       .map((person) => {
         const birthDate = this.toDate(person.birthDate);
         const deathDate = this.toDate(person.deathDate);
-        const events: TimelineEvent[] = [];
-
-        // Birth event
-        if (birthDate) {
-          const parts = [this.formatFuzzy(person.birthDate)];
-          if (person.birthPlace) parts.push(person.birthPlace);
-          events.push({ type: 'birth', category: 'birth', date: birthDate, tooltip: `Geburt: ${parts.join(', ')}` });
-        }
-
-        // Death event
-        if (deathDate) {
-          const parts = [this.formatFuzzy(person.deathDate)];
-          if (person.deathPlace) parts.push(person.deathPlace);
-          events.push({ type: 'death', category: 'death', date: deathDate, tooltip: `Tod: ${parts.join(', ')}` });
-        }
-
-        // Child-born events (person is parent)
-        const childRelations = relations.filter(
-          (r) =>
-            PARENT_TYPES.includes(r.type) &&
-            (r.personAId === person.id || r.personBId === person.id),
-        );
-        for (const rel of childRelations) {
-          const childId = rel.personAId === person.id ? rel.personBId : rel.personAId;
-          const child = personMap.get(childId);
-          if (child?.birthDate) {
-            const d = this.toDate(child.birthDate);
-            if (d) {
-              events.push({
-                type: 'child-born',
-                category: 'child-born',
-                date: d,
-                tooltip: `Kind geboren: ${child.firstName} ${child.lastName}, ${this.formatFuzzy(child.birthDate)}`,
-              });
-            }
-          }
-        }
-
-        // Relationship events
-        const personRelations = relations.filter(
-          (r) =>
-            partnerTypes.includes(r.type) &&
-            (r.personAId === person.id || r.personBId === person.id),
-        );
-
-        const relationshipRows: TimelineRelationRow[] = [];
-        for (const rel of personRelations) {
-          const partnerId = rel.personAId === person.id ? rel.personBId : rel.personAId;
-          const partner = personMap.get(partnerId);
-          const partnerName = partner ? `${partner.firstName} ${partner.lastName}` : 'Unbekannt';
-          const typeLabel = RELATION_TYPE_LABELS[rel.type] ?? rel.type;
-
-          if (rel.startDate) {
-            const d = this.toDate(rel.startDate);
-            if (d) {
-              events.push({
-                type: 'relationship-start',
-                category: 'relationship',
-                date: d,
-                tooltip: `${typeLabel}: ${partnerName}, ${this.formatFuzzy(rel.startDate)}`,
-              });
-            }
-          }
-          if (rel.endDate) {
-            const d = this.toDate(rel.endDate);
-            if (d) {
-              const parts = [`${typeLabel} Ende: ${partnerName}, ${this.formatFuzzy(rel.endDate)}`];
-              if (rel.endReason) parts.push(rel.endReason);
-              events.push({ type: 'relationship-end', category: 'relationship', date: d, tooltip: parts.join(' – ') });
-            }
-          }
-
-          const startDate = this.toDate(rel.startDate);
-          if (startDate) {
-            const endDate = this.toDate(rel.endDate);
-            const tooltipParts = [`${typeLabel} mit ${partnerName}`];
-            tooltipParts.push(`Beginn: ${this.formatFuzzy(rel.startDate)}`);
-            if (rel.endDate) tooltipParts.push(`Ende: ${this.formatFuzzy(rel.endDate)}`);
-            if (rel.endReason) tooltipParts.push(`Grund: ${rel.endReason}`);
-
-            relationshipRows.push({
-              relation: rel,
-              partnerName: partner?.firstName ?? 'Unbekannt',
-              typeLabel,
-              relationType: rel.type,
-              startDate,
-              endDate,
-              tooltip: tooltipParts.join('\n'),
-            });
-          }
-        }
-
-        // Residence events
-        const personResidences = residences.filter((r) => r.personId === person.id);
-        const residenceRows: TimelineResidenceRow[] = [];
-        for (const res of personResidences) {
-          const address = res.street || 'Unbekannt';
-
-          if (res.startDate) {
-            const d = this.toDate(res.startDate);
-            if (d) {
-              events.push({
-                type: 'residence-start',
-                category: 'residence',
-                date: d,
-                tooltip: `Wohnort: ${address}, ${this.formatFuzzy(res.startDate)}`,
-              });
-            }
-          }
-          if (res.endDate) {
-            const d = this.toDate(res.endDate);
-            if (d) {
-              events.push({
-                type: 'residence-end',
-                category: 'residence',
-                date: d,
-                tooltip: `Wohnort Ende: ${address}, ${this.formatFuzzy(res.endDate)}`,
-              });
-            }
-          }
-
-          const startDate = this.toDate(res.startDate);
-          if (startDate) {
-            const endDate = this.toDate(res.endDate);
-            const tooltipParts = [address];
-            tooltipParts.push(`Beginn: ${this.formatFuzzy(res.startDate)}`);
-            if (res.endDate) tooltipParts.push(`Ende: ${this.formatFuzzy(res.endDate)}`);
-
-            residenceRows.push({
-              residence: res,
-              address,
-              startDate,
-              endDate,
-              tooltip: tooltipParts.join('\n'),
-            });
-          }
-        }
-
-        const birthDeathEvents = events.filter(
-          (e) => e.type === 'birth' || e.type === 'death' || e.type === 'child-born',
-        );
+        const lifeEvents = this.buildLifeEvents(person, relations, personMap);
+        const { events: relationEvents, rows: relationships } = this.buildRelationships(person, relations, personMap);
+        const { events: residenceEvents, rows: residenceRows } = this.buildResidences(person, residences);
+        const events = [...lifeEvents, ...relationEvents, ...residenceEvents];
 
         return {
           person,
@@ -251,8 +115,8 @@ export class TimelineComponent {
           deathDate,
           events,
           groupedEvents: this.groupByYear(events),
-          groupedBirthDeathEvents: this.groupByYear(birthDeathEvents),
-          relationships: relationshipRows,
+          groupedBirthDeathEvents: this.groupByYear(lifeEvents),
+          relationships,
           residences: residenceRows,
         } satisfies TimelinePersonRow;
       });
@@ -297,6 +161,160 @@ export class TimelineComponent {
   decadeLeft(year: number): number {
     const scale = this.timeScale();
     return (year - scale.minYear) * scale.pxPerYear;
+  }
+
+  private buildLifeEvents(person: Person, relations: Relation[], personMap: Map<string, Person>): TimelineEvent[] {
+    const events: TimelineEvent[] = [];
+    const birthDate = this.toDate(person.birthDate);
+    const deathDate = this.toDate(person.deathDate);
+
+    if (birthDate) {
+      const parts = [this.formatFuzzy(person.birthDate)];
+      if (person.birthPlace) parts.push(person.birthPlace);
+      events.push({ type: 'birth', category: 'birth', date: birthDate, tooltip: `Geburt: ${parts.join(', ')}` });
+    }
+
+    if (deathDate) {
+      const parts = [this.formatFuzzy(person.deathDate)];
+      if (person.deathPlace) parts.push(person.deathPlace);
+      events.push({ type: 'death', category: 'death', date: deathDate, tooltip: `Tod: ${parts.join(', ')}` });
+    }
+
+    const childRelations = relations.filter(
+      (r) => PARENT_TYPES.includes(r.type) && (r.personAId === person.id || r.personBId === person.id),
+    );
+    for (const rel of childRelations) {
+      const childId = rel.personAId === person.id ? rel.personBId : rel.personAId;
+      const child = personMap.get(childId);
+      if (child?.birthDate) {
+        const d = this.toDate(child.birthDate);
+        if (d) {
+          events.push({
+            type: 'child-born',
+            category: 'child-born',
+            date: d,
+            tooltip: `Kind geboren: ${child.firstName} ${child.lastName}, ${this.formatFuzzy(child.birthDate)}`,
+          });
+        }
+      }
+    }
+
+    return events;
+  }
+
+  private buildRelationships(
+    person: Person,
+    relations: Relation[],
+    personMap: Map<string, Person>,
+  ): { events: TimelineEvent[]; rows: TimelineRelationRow[] } {
+    const events: TimelineEvent[] = [];
+    const rows: TimelineRelationRow[] = [];
+
+    const personRelations = relations.filter(
+      (r) => PARTNER_TYPES.includes(r.type) && (r.personAId === person.id || r.personBId === person.id),
+    );
+
+    for (const rel of personRelations) {
+      const partnerId = rel.personAId === person.id ? rel.personBId : rel.personAId;
+      const partner = personMap.get(partnerId);
+      const partnerName = partner ? `${partner.firstName} ${partner.lastName}` : 'Unbekannt';
+      const typeLabel = RELATION_TYPE_LABELS[rel.type] ?? rel.type;
+
+      if (rel.startDate) {
+        const d = this.toDate(rel.startDate);
+        if (d) {
+          events.push({
+            type: 'relationship-start',
+            category: 'relationship',
+            date: d,
+            tooltip: `${typeLabel}: ${partnerName}, ${this.formatFuzzy(rel.startDate)}`,
+          });
+        }
+      }
+      if (rel.endDate) {
+        const d = this.toDate(rel.endDate);
+        if (d) {
+          const parts = [`${typeLabel} Ende: ${partnerName}, ${this.formatFuzzy(rel.endDate)}`];
+          if (rel.endReason) parts.push(rel.endReason);
+          events.push({ type: 'relationship-end', category: 'relationship', date: d, tooltip: parts.join(' – ') });
+        }
+      }
+
+      const startDate = this.toDate(rel.startDate);
+      if (startDate) {
+        const endDate = this.toDate(rel.endDate);
+        const tooltipParts = [`${typeLabel} mit ${partnerName}`];
+        tooltipParts.push(`Beginn: ${this.formatFuzzy(rel.startDate)}`);
+        if (rel.endDate) tooltipParts.push(`Ende: ${this.formatFuzzy(rel.endDate)}`);
+        if (rel.endReason) tooltipParts.push(`Grund: ${rel.endReason}`);
+
+        rows.push({
+          relation: rel,
+          partnerName: partner?.firstName ?? 'Unbekannt',
+          typeLabel,
+          relationType: rel.type,
+          startDate,
+          endDate,
+          tooltip: tooltipParts.join('\n'),
+        });
+      }
+    }
+
+    return { events, rows };
+  }
+
+  private buildResidences(
+    person: Person,
+    residences: Residence[],
+  ): { events: TimelineEvent[]; rows: TimelineResidenceRow[] } {
+    const events: TimelineEvent[] = [];
+    const rows: TimelineResidenceRow[] = [];
+
+    const personResidences = residences.filter((r) => r.personId === person.id);
+    for (const res of personResidences) {
+      const address = res.street || 'Unbekannt';
+
+      if (res.startDate) {
+        const d = this.toDate(res.startDate);
+        if (d) {
+          events.push({
+            type: 'residence-start',
+            category: 'residence',
+            date: d,
+            tooltip: `Wohnort: ${address}, ${this.formatFuzzy(res.startDate)}`,
+          });
+        }
+      }
+      if (res.endDate) {
+        const d = this.toDate(res.endDate);
+        if (d) {
+          events.push({
+            type: 'residence-end',
+            category: 'residence',
+            date: d,
+            tooltip: `Wohnort Ende: ${address}, ${this.formatFuzzy(res.endDate)}`,
+          });
+        }
+      }
+
+      const startDate = this.toDate(res.startDate);
+      if (startDate) {
+        const endDate = this.toDate(res.endDate);
+        const tooltipParts = [address];
+        tooltipParts.push(`Beginn: ${this.formatFuzzy(res.startDate)}`);
+        if (res.endDate) tooltipParts.push(`Ende: ${this.formatFuzzy(res.endDate)}`);
+
+        rows.push({
+          residence: res,
+          address,
+          startDate,
+          endDate,
+          tooltip: tooltipParts.join('\n'),
+        });
+      }
+    }
+
+    return { events, rows };
   }
 
   private groupByYear(events: TimelineEvent[]): TimelineEventGroup[] {

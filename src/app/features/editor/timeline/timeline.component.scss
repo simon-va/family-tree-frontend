@@ -175,46 +175,6 @@ $grid-color: #e2e8f0;
   cursor: default;
 }
 
-.event-dot {
-  position: absolute;
-  top: 50%;
-  width: $dot-size;
-  height: $dot-size;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  cursor: default;
-  z-index: 1;
-  border: 2px solid #fff;
-
-  &--birth {
-    background: $birth;
-  }
-
-  &--death {
-    background: $death;
-  }
-
-  &--child-born {
-    background: $child-born;
-  }
-
-  &--relationship-start,
-  &--relationship-end,
-  &--relationship {
-    background: $rel-spouse;
-  }
-
-  &--residence-start,
-  &--residence-end,
-  &--residence {
-    background: $residence;
-  }
-
-  &--multi {
-    background: #94a3b8;
-  }
-}
-
 .sub-rows {
   display: grid;
   grid-template-rows: 0fr;

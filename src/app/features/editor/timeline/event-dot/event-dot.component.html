@@ -1,0 +1,14 @@
+<ng-template #dotTooltip>
+  <strong class="dot-tooltip__year">{{ group().year }}</strong>
+  <hr class="dot-tooltip__divider" />
+  @for (evt of group().events; track $index) {
+    <div class="dot-tooltip__event">{{ evt.tooltip }}</div>
+  }
+</ng-template>
+<div
+  [class]="'event-dot ' + group().cssClass"
+  [style.left.px]="leftPx()"
+  [pTooltip]="dotTooltip"
+  tooltipPosition="top"
+  tooltipStyleClass="dot-tooltip"
+></div>
