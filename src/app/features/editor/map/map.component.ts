@@ -36,6 +36,7 @@ export class MapComponent {
   private markerByResidenceId = new Map<string, AdvancedMarker>();
   private moveLines: google.maps.Polyline[] = [];
   private currentEdges: MoveEdge[] = [];
+  private clickedLocationKeys: Set<string> | null = null;
 
   private cssVar(name: string, fallback: string): string {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
@@ -48,8 +49,9 @@ export class MapComponent {
       const residences = this.residencesStore.residences();
       const action = this.sidePanelService.action();
       if (!this.map) return;
+      if (action.type === 'none') this.clickedLocationKeys = null;
       const selectedPersonId = action.type === 'person-detail' ? action.personId : null;
-      this.renderMarkers(residences, selectedPersonId);
+      this.renderMarkers(residences, selectedPersonId, this.clickedLocationKeys);
       this.renderMoveLines();
     });
   }
@@ -83,18 +85,25 @@ export class MapComponent {
       render: ({ position, markers }) => {
         const action = this.sidePanelService.action();
         const selectedPersonId = action.type === 'person-detail' ? action.personId : null;
+        const isClicked =
+          this.clickedLocationKeys != null &&
+          (markers as AdvancedMarker[]).some((m) => {
+            const d = this.markerData.get(m);
+            return d != null && this.clickedLocationKeys!.has(`${d.lat},${d.lng}`);
+          });
         const isHighlighted =
           selectedPersonId != null &&
           (markers as AdvancedMarker[]).some((m) =>
             this.markerData.get(m)?.residences.some((r) => r.personId === selectedPersonId),
           );
+        const clusterColor = isClicked
+          ? this.cssVar('--p-green-600', '#16a34a')
+          : isHighlighted
+            ? this.cssVar('--p-green-500', '#22c55e')
+            : this.cssVar('--p-purple-500', '#a855f7');
         return new google.maps.marker.AdvancedMarkerElement({
           position,
-          content: this.createMarkerContent(
-            isHighlighted
-              ? this.cssVar('--p-green-500', '#22c55e')
-              : this.cssVar('--p-blue-500', '#3b82f6'),
-          ),
+          content: this.createMarkerContent(clusterColor),
         });
       },
     };
@@ -125,7 +134,7 @@ export class MapComponent {
     return [...grouped.values()];
   }
 
-  private renderMarkers(residences: Residence[], selectedPersonId: string | null = null): void {
+  private renderMarkers(residences: Residence[], selectedPersonId: string | null = null, clickedLocationKeys: Set<string> | null = null): void {
     if (!this.clusterer || !this.map) return;
     this.clusterer.clearMarkers();
     this.markerData = new WeakMap();
@@ -135,11 +144,15 @@ export class MapComponent {
     const markers: AdvancedMarker[] = [];
 
     for (const group of groups) {
+      const locationKey = `${group.lat},${group.lng}`;
+      const isClicked = clickedLocationKeys?.has(locationKey) ?? false;
       const isHighlighted =
         selectedPersonId != null && group.residences.some((r) => r.personId === selectedPersonId);
-      const color = isHighlighted
-        ? this.cssVar('--p-green-500', '#22c55e')
-        : this.cssVar('--p-blue-500', '#3b82f6');
+      const color = isClicked
+        ? this.cssVar('--p-green-600', '#16a34a')
+        : isHighlighted
+          ? this.cssVar('--p-green-500', '#22c55e')
+          : this.cssVar('--p-purple-500', '#a855f7');
       const marker = new google.maps.marker.AdvancedMarkerElement({
         position: { lat: group.lat, lng: group.lng },
         content: this.createMarkerContent(color),
@@ -150,9 +163,10 @@ export class MapComponent {
         this.markerByResidenceId.set(r.id, marker);
       }
 
-      marker.addListener('click', () =>
-        this.sidePanelService.open({ type: 'residence-location', locations: [group] }),
-      );
+      marker.addListener('click', () => {
+        this.clickedLocationKeys = new Set([`${group.lat},${group.lng}`]);
+        this.sidePanelService.open({ type: 'residence-location', locations: [group] });
+      });
 
       markers.push(marker);
     }
@@ -222,7 +236,7 @@ export class MapComponent {
         selectedPersonId != null && edge.from.personId === selectedPersonId;
       const lineColor = isHighlighted
         ? this.cssVar('--p-green-500', '#22c55e')
-        : this.cssVar('--p-indigo-500', '#6366f1');
+        : this.cssVar('--p-purple-500', '#a855f7');
 
       const line = new google.maps.Polyline({
         path: [fromLatLng, toLatLng],
@@ -263,6 +277,7 @@ export class MapComponent {
 
     const locations = [...grouped.values()];
     if (locations.length > 0) {
+      this.clickedLocationKeys = new Set(locations.map((l) => `${l.lat},${l.lng}`));
       this.sidePanelService.open({ type: 'residence-location', locations });
     }
   }
