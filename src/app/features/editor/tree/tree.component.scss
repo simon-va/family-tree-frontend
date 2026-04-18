@@ -1,0 +1,136 @@
+:host {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.tree-shell {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.tree-sidebar {
+  width: 180px;
+  min-width: 180px;
+  border-right: 1px solid var(--p-surface-200);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.tree-sidebar__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  border-bottom: 1px solid var(--p-surface-100);
+
+  &:hover {
+    background: var(--p-surface-100);
+  }
+
+  &--focus {
+    background: var(--p-primary-50);
+    font-weight: 600;
+    color: var(--p-highlight-color);
+  }
+
+  &--selected:not(&--focus) {
+    background: var(--p-surface-50);
+  }
+}
+
+.tree-sidebar__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.tree-sidebar__dagger {
+  flex-shrink: 0;
+  color: var(--p-surface-400);
+  font-size: 0.75rem;
+}
+
+.tree-canvas {
+  flex: 1;
+  overflow: auto;
+  padding: 0;
+}
+
+.tree-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--p-surface-400);
+  font-size: 0.875rem;
+}
+
+
+.person-box {
+  cursor: pointer;
+
+  rect {
+    fill: var(--p-surface-0);
+    stroke: var(--p-surface-300);
+    stroke-width: 1.5px;
+  }
+
+  &--focus rect {
+    fill: var(--p-primary-50);
+    stroke: var(--p-primary-color);
+    stroke-width: 2.5px;
+  }
+
+  &--deceased {
+    opacity: 0.6;
+  }
+
+  &--no-parent rect {
+    stroke-dasharray: 5 3;
+  }
+
+  text {
+    text-anchor: middle;
+    font-family: inherit;
+    fill: var(--p-text-color);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  &--focus text {
+    fill: var(--p-highlight-color);
+  }
+}
+
+.person-box__first-name {
+  font-size: 11px;
+  font-weight: 600;
+  dominant-baseline: auto;
+}
+
+.person-box__last-name {
+  font-size: 10px;
+  dominant-baseline: auto;
+}
+
+.person-box__sub {
+  font-size: 9px;
+  dominant-baseline: auto;
+  fill: var(--p-surface-500) !important;
+}
+
+.person-box__dagger {
+  font-size: 11px;
+  text-anchor: end;
+  dominant-baseline: auto;
+  fill: var(--p-surface-400) !important;
+}
