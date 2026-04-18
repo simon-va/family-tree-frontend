@@ -54,8 +54,7 @@
             class="person-box"
             [class.person-box--focus]="box.isFocus"
             [class.person-box--deceased]="box.isDeceased"
-            [class.person-box--no-parent]="box.hasNoKnownParent"
-            [attr.transform]="'translate(' + box.x + ',' + box.y + ')'"
+[attr.transform]="'translate(' + box.x + ',' + box.y + ')'"
             (click)="onPersonBoxClick(box.personId)"
           >
             <rect [attr.width]="BOX_W" [attr.height]="BOX_H" rx="6" />

@@ -19,7 +19,6 @@ export interface PersonBox {
   y: number;
   isFocus: boolean;
   isDeceased: boolean;
-  hasNoKnownParent: boolean;
   firstName: string;
   lastName: string;
   subLabel: string;
@@ -63,7 +62,6 @@ function makeBox(
       y,
       isFocus: false,
       isDeceased: false,
-      hasNoKnownParent: true,
       firstName: '?',
       lastName: '',
       subLabel: '',
@@ -86,7 +84,6 @@ function makeBox(
     y,
     isFocus: personId === focusId,
     isDeceased: !!person.deathDate,
-    hasNoKnownParent: !parents || parents.length === 0,
     firstName: person.firstName,
     lastName: person.lastName,
     subLabel,

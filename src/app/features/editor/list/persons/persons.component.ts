@@ -47,4 +47,8 @@ export class PersonsComponent {
     if (!data || Array.isArray(data)) return;
     this.sidePanelService.open({ type: 'person-detail', personId: data.id });
   }
+
+  onRowUnselect(): void {
+    this.sidePanelService.close();
+  }
 }

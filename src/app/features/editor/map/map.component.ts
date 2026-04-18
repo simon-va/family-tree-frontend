@@ -116,7 +116,9 @@ export class MapComponent {
 
     this.map.addListener('idle', () => this.renderMoveLines());
 
-    this.renderMarkers(this.residencesStore.residences());
+    const action = this.sidePanelService.action();
+    const selectedPersonId = action.type === 'person-detail' ? action.personId : null;
+    this.renderMarkers(this.residencesStore.residences(), selectedPersonId, this.clickedLocationKeys);
   }
 
   private groupResidences(residences: Residence[]): ResidenceLocationEntry[] {
