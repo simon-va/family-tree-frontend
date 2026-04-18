@@ -78,6 +78,20 @@ export class RelationFormComponent implements OnInit {
     ([value, label]) => ({ label, value: value as RelationType }),
   );
 
+  readonly personALabel = computed(() => {
+    const t = this.type();
+    if (t && PARENT_TYPES.includes(t)) return 'Elternteil';
+    if (t === 'spouse' || t === 'partner' || t === 'engaged') return 'Person 1';
+    return 'Person A';
+  });
+
+  readonly personBLabel = computed(() => {
+    const t = this.type();
+    if (t && PARENT_TYPES.includes(t)) return 'Kind';
+    if (t === 'spouse' || t === 'partner' || t === 'engaged') return 'Person 2';
+    return 'Person B';
+  });
+
   readonly isDuplicate = computed(() => {
     const aId = this.personAId();
     const bId = this.personBId();
