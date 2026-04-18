@@ -87,6 +87,15 @@ type PanelAction =
 - `shared/` — persons, relations, residences (model + service + store + pipes)
 - Editor side panel — detail/edit components for all three entities
 
+## Styles
+
+### CSS custom properties
+
+| Use case | Properties |
+|---|---|
+| Hover animation background | `background-color: var(--p-surface-100)` |
+| Highlight element | `background-color: var(--p-primary-50)` + `color: var(--p-highlight-color)` |
+
 ## Response and Planning
 
 Barebone language, no filler words. Technical details preserved.
