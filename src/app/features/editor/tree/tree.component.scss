@@ -90,14 +90,6 @@
     stroke-width: 2.5px;
   }
 
-  &--deceased {
-    opacity: 0.6;
-  }
-
-  &--no-parent rect {
-    stroke-dasharray: 5 3;
-  }
-
   text {
     text-anchor: middle;
     font-family: inherit;

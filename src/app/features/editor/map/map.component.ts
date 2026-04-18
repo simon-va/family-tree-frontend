@@ -38,8 +38,21 @@ export class MapComponent {
   private currentEdges: MoveEdge[] = [];
   private clickedLocationKeys: Set<string> | null = null;
 
+  private get selectedPersonId(): string | null {
+    const action = this.sidePanelService.action();
+    return action.type === 'person-detail' ? action.personId : null;
+  }
+
   private cssVar(name: string, fallback: string): string {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+  }
+
+  private markerColor(isClicked: boolean, isHighlighted: boolean): string {
+    return isClicked
+      ? this.cssVar('--p-green-600', '#16a34a')
+      : isHighlighted
+        ? this.cssVar('--p-green-500', '#22c55e')
+        : this.cssVar('--p-purple-500', '#a855f7');
   }
 
   constructor() {
@@ -50,8 +63,7 @@ export class MapComponent {
       const action = this.sidePanelService.action();
       if (!this.map) return;
       if (action.type === 'none') this.clickedLocationKeys = null;
-      const selectedPersonId = action.type === 'person-detail' ? action.personId : null;
-      this.renderMarkers(residences, selectedPersonId, this.clickedLocationKeys);
+      this.renderMarkers(residences);
       this.renderMoveLines();
     });
   }
@@ -69,7 +81,6 @@ export class MapComponent {
     const el = this.mapContainer()?.nativeElement;
     if (!el) return;
 
-    // mapId is required for AdvancedMarkerElement — replace DEMO_MAP_ID with a real Map ID from Google Cloud Console
     this.map = new google.maps.Map(el, {
       center: { lat: 50, lng: 10 },
       zoom: 5,
@@ -83,8 +94,7 @@ export class MapComponent {
 
     const renderer: Renderer = {
       render: ({ position, markers }) => {
-        const action = this.sidePanelService.action();
-        const selectedPersonId = action.type === 'person-detail' ? action.personId : null;
+        const selectedPersonId = this.selectedPersonId;
         const isClicked =
           this.clickedLocationKeys != null &&
           (markers as AdvancedMarker[]).some((m) => {
@@ -96,14 +106,9 @@ export class MapComponent {
           (markers as AdvancedMarker[]).some((m) =>
             this.markerData.get(m)?.residences.some((r) => r.personId === selectedPersonId),
           );
-        const clusterColor = isClicked
-          ? this.cssVar('--p-green-600', '#16a34a')
-          : isHighlighted
-            ? this.cssVar('--p-green-500', '#22c55e')
-            : this.cssVar('--p-purple-500', '#a855f7');
         return new google.maps.marker.AdvancedMarkerElement({
           position,
-          content: this.createMarkerContent(clusterColor),
+          content: this.createMarkerContent(this.markerColor(isClicked, isHighlighted)),
         });
       },
     };
@@ -134,28 +139,24 @@ export class MapComponent {
     return [...grouped.values()];
   }
 
-  private renderMarkers(residences: Residence[], selectedPersonId: string | null = null, clickedLocationKeys: Set<string> | null = null): void {
+  private renderMarkers(residences: Residence[]): void {
     if (!this.clusterer || !this.map) return;
     this.clusterer.clearMarkers();
     this.markerData = new WeakMap();
     this.markerByResidenceId = new Map();
 
+    const selectedPersonId = this.selectedPersonId;
     const groups = this.groupResidences(residences);
     const markers: AdvancedMarker[] = [];
 
     for (const group of groups) {
       const locationKey = `${group.lat},${group.lng}`;
-      const isClicked = clickedLocationKeys?.has(locationKey) ?? false;
+      const isClicked = this.clickedLocationKeys?.has(locationKey) ?? false;
       const isHighlighted =
         selectedPersonId != null && group.residences.some((r) => r.personId === selectedPersonId);
-      const color = isClicked
-        ? this.cssVar('--p-green-600', '#16a34a')
-        : isHighlighted
-          ? this.cssVar('--p-green-500', '#22c55e')
-          : this.cssVar('--p-purple-500', '#a855f7');
       const marker = new google.maps.marker.AdvancedMarkerElement({
         position: { lat: group.lat, lng: group.lng },
-        content: this.createMarkerContent(color),
+        content: this.createMarkerContent(this.markerColor(isClicked, isHighlighted)),
       });
 
       this.markerData.set(marker, group);
@@ -212,9 +213,7 @@ export class MapComponent {
     this.moveLines = [];
 
     const drawn = new Set<string>();
-
-    const action = this.sidePanelService.action();
-    const selectedPersonId = action.type === 'person-detail' ? action.personId : null;
+    const selectedPersonId = this.selectedPersonId;
 
     for (const edge of this.currentEdges) {
       const fromMarker = this.markerByResidenceId.get(edge.from.id);
@@ -264,18 +263,10 @@ export class MapComponent {
   }
 
   private onClusterClick(cluster: Cluster): void {
-    const grouped = new Map<string, ResidenceLocationEntry>();
+    const locations = ((cluster.markers ?? []) as AdvancedMarker[])
+      .map((m) => this.markerData.get(m))
+      .filter((e): e is ResidenceLocationEntry => e != null);
 
-    for (const marker of (cluster.markers ?? []) as AdvancedMarker[]) {
-      const entry = this.markerData.get(marker);
-      if (!entry) continue;
-      const key = `${entry.lat},${entry.lng}`;
-      if (!grouped.has(key)) {
-        grouped.set(key, { lat: entry.lat, lng: entry.lng, residences: [...entry.residences] });
-      }
-    }
-
-    const locations = [...grouped.values()];
     if (locations.length > 0) {
       this.clickedLocationKeys = new Set(locations.map((l) => `${l.lat},${l.lng}`));
       this.sidePanelService.open({ type: 'residence-location', locations });

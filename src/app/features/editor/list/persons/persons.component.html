@@ -8,6 +8,7 @@
     dataKey="id"
     [selection]="selectedPerson()"
     (onRowSelect)="onRowSelect($event.data)"
+    (onRowUnselect)="onRowUnselect()"
     [scrollable]="true"
     scrollHeight="flex"
     [tableStyle]="{ 'min-width': '50rem' }"
