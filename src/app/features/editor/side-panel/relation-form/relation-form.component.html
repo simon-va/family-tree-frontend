@@ -1,6 +1,20 @@
 <div class="relation-form">
   <div class="relation-form__field">
-    <label for="personA">Person A <span class="required">*</span></label>
+    <label for="type">Typ <span class="required">*</span></label>
+    <p-select
+      id="type"
+      [options]="typeOptions"
+      [ngModel]="type()"
+      (ngModelChange)="type.set($event)"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Beziehungstyp auswählen"
+      [disabled]="saving()"
+    />
+  </div>
+
+  <div class="relation-form__field">
+    <label for="personA">{{ personALabel() }} <span class="required">*</span></label>
     <p-select
       id="personA"
       [options]="personAOptions()"
@@ -16,21 +30,7 @@
   </div>
 
   <div class="relation-form__field">
-    <label for="type">Typ <span class="required">*</span></label>
-    <p-select
-      id="type"
-      [options]="typeOptions"
-      [ngModel]="type()"
-      (ngModelChange)="type.set($event)"
-      optionLabel="label"
-      optionValue="value"
-      placeholder="Beziehungstyp auswählen"
-      [disabled]="saving()"
-    />
-  </div>
-
-  <div class="relation-form__field">
-    <label for="personB">Person B <span class="required">*</span></label>
+    <label for="personB">{{ personBLabel() }} <span class="required">*</span></label>
     <p-select
       id="personB"
       [options]="personBOptions()"
