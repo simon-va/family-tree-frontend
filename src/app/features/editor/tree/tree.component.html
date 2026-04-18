@@ -1,0 +1,85 @@
+<div class="tree-shell">
+  <aside class="tree-sidebar" #sidebar>
+    @for (person of sortedPersons(); track person.id) {
+      <div
+        class="tree-sidebar__item"
+        [class.tree-sidebar__item--focus]="focusId() === person.id"
+        [class.tree-sidebar__item--selected]="selectedPersonId() === person.id"
+        [attr.data-person-id]="person.id"
+        (click)="onSidebarPersonClick(person.id)"
+      >
+        <span class="tree-sidebar__name">{{ person.firstName }} {{ person.lastName }}</span>
+        @if (person.deathDate) {
+          <span class="tree-sidebar__dagger">†</span>
+        }
+      </div>
+    }
+  </aside>
+
+  <div class="tree-canvas">
+    @if (!layout()) {
+      <div class="tree-empty">
+        <p>Wähle eine Person aus der Liste, um den Stammbaum anzuzeigen.</p>
+      </div>
+    } @else {
+      @let l = layout()!;
+      <svg
+        [attr.width]="l.svgWidth"
+        [attr.height]="l.svgHeight"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          @for (box of l.boxes; track box.personId) {
+            <clipPath [id]="'clip-' + box.personId">
+              <rect [attr.width]="BOX_W - 8" [attr.height]="BOX_H" x="4" y="0" />
+            </clipPath>
+          }
+        </defs>
+
+        @for (line of l.lines; track $index) {
+          <line
+            [attr.x1]="line.x1"
+            [attr.y1]="line.y1"
+            [attr.x2]="line.x2"
+            [attr.y2]="line.y2"
+            stroke="var(--p-surface-400)"
+            stroke-width="1.5"
+            fill="none"
+            [attr.stroke-dasharray]="line.style === 'dashed' ? '6,4' : line.style === 'dotted' ? '2,4' : null"
+          />
+        }
+
+        @for (box of l.boxes; track box.personId) {
+          <g
+            class="person-box"
+            [class.person-box--focus]="box.isFocus"
+            [class.person-box--deceased]="box.isDeceased"
+            [class.person-box--no-parent]="box.hasNoKnownParent"
+            [attr.transform]="'translate(' + box.x + ',' + box.y + ')'"
+            (click)="onPersonBoxClick(box.personId)"
+          >
+            <rect [attr.width]="BOX_W" [attr.height]="BOX_H" rx="6" />
+            <text
+              class="person-box__first-name"
+              [attr.x]="BOX_W / 2"
+              y="22"
+              [attr.clip-path]="'url(#clip-' + box.personId + ')'"
+            >{{ box.firstName }}</text>
+            <text
+              class="person-box__last-name"
+              [attr.x]="BOX_W / 2"
+              y="36"
+              [attr.clip-path]="'url(#clip-' + box.personId + ')'"
+            >{{ box.lastName }}</text>
+            @if (box.subLabel) {
+              <text class="person-box__sub" [attr.x]="BOX_W / 2" y="50">{{ box.subLabel }}</text>
+            }
+            @if (box.isDeceased) {
+              <text class="person-box__dagger" [attr.x]="BOX_W - 8" y="14">†</text>
+            }
+          </g>
+        }
+      </svg>
+    }
+  </div>
+</div>
